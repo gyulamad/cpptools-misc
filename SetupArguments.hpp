@@ -6,7 +6,9 @@
 // Deprecated: use AppArguments instead
 class SetupArguments: public Arguments {
 public:
-    SetupArguments(int argc, char* argv[]): Arguments(argc, argv) {
+    SetupArguments(int argc, char* argv[]): Arguments(argc, argv) {}
+
+    void init() {
         if (has("setup")) {
             setupIniName = get<string>("setup");
             setupIniFile = IniFile(setupIniName, true);

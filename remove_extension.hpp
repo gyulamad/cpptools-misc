@@ -9,9 +9,11 @@
 using namespace std;
 
 string remove_extension(const string& fname) {
-    vector<string> splits = explode(".", fname);
-    if (splits.size() > 1) splits.pop_back(); // remove last element but only if it had extension
-    return implode(".", splits);
+    vector<string> splits_path = explode("/", fname);
+    vector<string> splits_last = explode(".", splits_path[splits_path.size() - 1]);
+    if (splits_last.size() > 1) splits_last.pop_back(); // remove last element but only if it had extension
+    splits_path[splits_path.size() - 1] = implode(".", splits_last);
+    return implode("/", splits_path);
 }
 
 #ifdef TEST
@@ -46,6 +48,18 @@ TEST(test_remove_extension_only_extension) {
     string filename = ".txt";
     string result = remove_extension(filename);
     assert(result == "" && "Should return empty string for filename with only extension");
+}
+
+TEST(test_remove_extension_relative_path_up) {
+    string filename = "../path/to/file.txt";
+    string result = remove_extension(filename);
+    assert(result == "../path/to/file" && "Should return empty string for filename with only extension");
+}
+
+TEST(test_remove_extension_relative_path_up_no_ext) {
+    string filename = "../path/to/file";
+    string result = remove_extension(filename);
+    assert(result == "../path/to/file" && "Should return empty string for filename with only extension");
 }
 
 #endif

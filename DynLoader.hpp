@@ -23,6 +23,7 @@
 #include "sort.hpp"
 
 #include "../../autobuild/Builder.hpp"
+#include "../../autobuild/Dependency.hpp"
 
 using namespace std;
 
@@ -134,7 +135,6 @@ private:
         //         , ".cpp");
 
         if (!file_exists(libPath)) {
-
             string cppPath = replace_extension(path, ".cpp");
             if (!file_exists(cppPath)) 
                 throw ERROR("Cound not rebuild shared library, file not found: " 
@@ -150,7 +150,7 @@ private:
             //     + " 2>&1"
             // ;
 
-            string cmd = "./autobuild " + cppPath // + " " + libPath 
+            string cmd = "./builder " + cppPath // + " " + libPath 
                 + (!modeFlags.empty() ? " --mode=" + implode(",", modeFlags) : "") // TODO: flags from parameter + rename and add to "modes"
                 //+ (!buildPath.empty() ? " --build-folder=" + buildPath : "")
                 + (verbose ? " --verbose" : "") // TODO: to parameter
@@ -168,7 +168,7 @@ private:
 
         // Load the shared library
         if (verbose) LOG("Loading shared library: " + F(F_FILE, libPath));
-        void* handle = dlopen(libPath.c_str(), RTLD_LAZY);
+        void* handle = dlopen(libPath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!handle)
             throw ERROR("Failed to load library: " + string(dlerror()));
         
