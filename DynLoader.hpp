@@ -134,8 +134,10 @@ private:
         //     #endif
         //         , ".cpp");
 
-        if (!file_exists(libPath)) {
-            string cppPath = replace_extension(path, ".cpp");
+        string cppPath = replace_extension(path, ".cpp");
+        if (!file_exists(libPath) || 
+            (file_exists(cppPath) && (filemtime_ms(libPath) < filemtime_ms(cppPath)))
+        ) {
             if (!file_exists(cppPath)) 
                 throw ERROR("Cound not rebuild shared library, file not found: " 
                     + F(F_FILE, cppPath));
