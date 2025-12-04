@@ -23,6 +23,11 @@ TEST(test_get_path_basic) {
     assert(actual == "path/to" && "Basic path extraction failed");
 }
 
+TEST(test_get_path_absolute) {
+    string actual = get_path("/path/to/file.txt");
+    assert(actual == "/path/to" && "Basic path extraction failed");
+}
+
 // TEST(test_get_path_backslashes) {
 //     string actual = get_path("path\\to\\file.txt");
 //     assert(actual == "path/to" && "Backslash path extraction failed");
