@@ -30,7 +30,7 @@ using namespace std;
 class DynLoader: public Builder {
 public:
     // Constructor
-    DynLoader(vector<string> modes = {}): Builder(modes) {};
+    DynLoader(vector<string> modes = {}, bool verbose = false): Builder(modes, verbose) {};
 
     // Destructor: Clean up all loaded objects and libraries
     virtual ~DynLoader() {
@@ -48,7 +48,7 @@ public:
     // Load a shared library and create an instance of type T with no arguments
     template <typename T, typename... Args>
     T* load(const string& path, Args&&... args) {
-        void* handle = loadLibrary(path, modes);
+        void* handle = loadLibrary(path, modes, verbose);
         // Select the appropriate CreateFunc type based on whether arguments are provided
         using CreateFunc = typename std::conditional<
             sizeof...(Args) == 0,
@@ -96,21 +96,23 @@ private:
 
 
     // Private helper: Load a shared library or get existing handle
-    void* loadLibrary(const string& path, vector<string> modes) const {
+    void* loadLibrary(
+        const string& path, 
+        vector<string> modes, 
+        const bool verbose
+    ) const {
         #ifdef DEBUG
         modes.push_back("debug");
         #endif
         sort(modes);
 
-        LOG("Attempt to load shared library: " + F(F_FILE, path) + " (modes: " + (!modes.empty() ? implode(",", modes) : "<none>") + ")");
+        if (verbose) LOG("Attempt to load shared library: " + F(F_FILE, path) + " (modes: " + (!modes.empty() ? implode(",", modes) : "<none>") + ")");
             
         const string buildPath = getBuildFolder(
             DIR_BUILD_PATH, // TODO: to parameter
             modes,
             SEP_MODES // TODO: to parameter
         ); // TODO: to parameter
-
-        const bool verbose = true; // TODO: always true?
 
         string libPath = fix_path(replace_extension(path, ".so"));
         libPath = replaceToBuildPath(libPath, buildPath); // fixPath(path);
