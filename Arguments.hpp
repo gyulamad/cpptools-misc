@@ -52,7 +52,6 @@ public:
             if (hlp.first.first == key || hlp.first.second == key)
                 return true;
         return false;
-        // return helps.key.count({key, ""}) > 0 || std::any_of(helps.key.begin(), helps.key.end(), [&](const auto& pair){ return pair.first.first == key; });
     }
 
     bool hasHelp(const size_t at) const {

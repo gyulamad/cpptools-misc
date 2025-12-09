@@ -65,27 +65,6 @@ using namespace std;
 
 // Helper to compare str_diff_t vectors (essential for testing)
 // Note: Assumes vector<string> comparison works as expected.
-// bool compare_diff_vectors(const vector<str_diff_t>& actual, const vector<str_diff_t>& expected) {
-//     if (actual.size() != expected.size()) {
-//         cerr << "compare_diff_vectors: Size mismatch. Actual: " << actual.size() << ", Expected: " << expected.size() << endl;
-//         return false;
-//     }
-//     for (size_t i = 0; i < actual.size(); ++i) {
-//         bool bounds_match = actual[i].bound[0] == expected[i].bound[0] && actual[i].bound[1] == expected[i].bound[1];
-//         bool added_match = actual[i].added == expected[i].added;
-//         bool removed_match = actual[i].removed == expected[i].removed;
-
-//         if (!bounds_match || !added_match || !removed_match) {
-//              cerr << "compare_diff_vectors: Mismatch at index " << i << endl;
-//              if (!bounds_match) cerr << "  Bounds: Actual [" << actual[i].bound[0] << "," << actual[i].bound[1] << "], Expected [" << expected[i].bound[0] << "," << expected[i].bound[1] << "]" << endl;
-//              // Optionally print vector contents if they don't match
-//              // if (!added_match) ...
-//              // if (!removed_match) ...
-//             return false;
-//         }
-//     }
-//     return true;
-// }
 #include "compare_diff_vectors.hpp"
 
 // --- Test Cases ---

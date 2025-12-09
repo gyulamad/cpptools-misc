@@ -30,7 +30,7 @@ using namespace std;
 class DynLoader: public Builder {
 public:
     // Constructor
-    DynLoader(): Builder() {};
+    DynLoader(vector<string> modes = {}): Builder(modes) {};
 
     // Destructor: Clean up all loaded objects and libraries
     virtual ~DynLoader() {
@@ -48,8 +48,7 @@ public:
     // Load a shared library and create an instance of type T with no arguments
     template <typename T, typename... Args>
     T* load(const string& path, Args&&... args) {
-        void* handle = loadLibrary(path);
-        
+        void* handle = loadLibrary(path, modes);
         // Select the appropriate CreateFunc type based on whether arguments are provided
         using CreateFunc = typename std::conditional<
             sizeof...(Args) == 0,
@@ -97,23 +96,21 @@ private:
 
 
     // Private helper: Load a shared library or get existing handle
-    void* loadLibrary(const string& path) {
+    void* loadLibrary(const string& path, vector<string> modes) const {
+        #ifdef DEBUG
+        modes.push_back("debug");
+        #endif
+        sort(modes);
 
-        vector<string> modeFlags = { 
-            "strict", "fast" 
-            #ifdef DEBUG
-                , "debug"
-            #endif
-        }; // TODO: to parameter
-        sort(modeFlags);
+        LOG("Attempt to load shared library: " + F(F_FILE, path) + " (modes: " + (!modes.empty() ? implode(",", modes) : "<none>") + ")");
             
         const string buildPath = getBuildFolder(
             DIR_BUILD_PATH, // TODO: to parameter
-            modeFlags,
+            modes,
             SEP_MODES // TODO: to parameter
         ); // TODO: to parameter
 
-        const bool verbose = true;
+        const bool verbose = true; // TODO: always true?
 
         string libPath = fix_path(replace_extension(path, ".so"));
         libPath = replaceToBuildPath(libPath, buildPath); // fixPath(path);
@@ -126,47 +123,29 @@ private:
         // rebuild only once before it really have to be loaded 
         // so that it does not take time to rebuild everything when debug builds
         
-        // string cppPath = replace_extension(
-        //     #ifdef DEBUG
-        //         remove_extension(libPath)
-        //     #else
-        //         libPath
-        //     #endif
-        //         , ".cpp");
-
         string cppPath = replace_extension(path, ".cpp");
-        if (!file_exists(libPath) || 
-            (file_exists(cppPath) && (filemtime_ms(libPath) < filemtime_ms(cppPath)))
-        ) {
-            if (!file_exists(cppPath)) 
-                throw ERROR("Cound not rebuild shared library, file not found: " 
-                    + F(F_FILE, cppPath));
+    
+        if (!file_exists(cppPath)) 
+            throw ERROR("Cound not (re)build shared library, file not found: " 
+                + F(F_FILE, cppPath));
 
-            if (verbose) LOG("Build shared library: " + F(F_FILE, cppPath));
+        if (verbose) LOG("Build shared library: " + F(F_FILE, cppPath) + " (mode flags: " + (!modes.empty() ? implode(",", modes) : "<none>") + ")");
 
-            // string cmd = "./build " + cppPath + " " + libPath + " --shared" +
-            //     (flags.empty() ? "" : " " + implode(" ", flags)) 
-            //     #ifdef DEBUG
-            //         + " --debug"
-            //     #endif
-            //     + " 2>&1"
-            // ;
+        // TODO: test buildPath and libPath
+        string cmd = "./builder " + cppPath // + " " + libPath 
+            + (!modes.empty() ? " --mode=" + implode(",", modes) : "")
+            //+ (!buildPath.empty() ? " --build-folder=" + buildPath : "") 
+            + (verbose ? " --verbose" : "") // TODO: to parameter
+            + " --shared"// 2>&1"
+        ;
 
-            string cmd = "./builder " + cppPath // + " " + libPath 
-                + (!modeFlags.empty() ? " --mode=" + implode(",", modeFlags) : "") // TODO: flags from parameter + rename and add to "modes"
-                //+ (!buildPath.empty() ? " --build-folder=" + buildPath : "")
-                + (verbose ? " --verbose" : "") // TODO: to parameter
-                + " --shared"// 2>&1"
-            ;
-
-            string errs;
-            if (verbose) LOG("Execute: " + cmd);
-            int err = Executor::execute(cmd, nullptr, &errs, false);
-            if (err)
-                throw ERROR("Library build failed (" + to_string(err) + "):\n" 
-                    + highlight_compiler_outputs("\nError:\n" + errs));
-        }
-         
+        string errs;
+        if (verbose) LOG("Execute: " + cmd);
+        int err = Executor::execute(cmd, nullptr, &errs, false);
+        if (err)
+            throw ERROR("Library build failed (" + to_string(err) + "):\n" 
+                + highlight_compiler_outputs("\nError:\n" + errs));
+        
 
         // Load the shared library
         if (verbose) LOG("Loading shared library: " + F(F_FILE, libPath));
@@ -209,14 +188,4 @@ private:
             libraries.emplace(libPath, LibInfo(handle, reinterpret_cast<void (*)(void*)>(destroy)));
         }
     }
-
-//     string fixPath(const string& path) {
-//         string folder = ".build";
-// #ifdef DEBUG        
-//         // return get_absolute_path(path) + ".gdb";
-//         folder += "-debug";
-// #else
-//         return get_absolute_path(folder + "/" + path);
-// #endif
-//     }
 };

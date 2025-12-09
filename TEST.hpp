@@ -86,9 +86,7 @@ public:
                     }
                 }
             } catch (exception& e) {
-                add_error(info + "\n" + e.what());
-                // error_infos += info + "\n" + e.what() + "\n";
-                // errors++;                
+                add_error(info + "\n" + e.what());              
                 print_err();
                 continue;
             }
