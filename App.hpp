@@ -9,13 +9,16 @@ class App {
 public:
     App() {}
 
-    virtual ~App() {}
+    virtual ~App() {
+        if (args) delete args;
+        args = nullptr;
+    }
 
     int run(int argc, char* argv[]) {
         try {
             createLogger<L>();
-            A args(argc, argv);
-            process(args);
+            args = new A(argc, argv);
+            process();
         } catch (exception &e) {
             LOG_ERROR("Exception" + EWHAT);
             return 1;
@@ -24,5 +27,7 @@ public:
     }
 
 protected:
-    virtual void process(A& args) = 0;
+    virtual void process() = 0;
+
+    A* args = nullptr;
 };

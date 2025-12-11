@@ -50,7 +50,7 @@ public:
     T* load(const string& path, Args&&... args) {
         void* handle = loadLibrary(path, modes, verbose);
         // Select the appropriate CreateFunc type based on whether arguments are provided
-        using CreateFunc = typename std::conditional<
+        using CreateFunc = typename conditional<
             sizeof...(Args) == 0,
             T* (*)(),
             T* (*)(Args...)
@@ -68,7 +68,7 @@ public:
         if constexpr (sizeof...(Args) == 0) {
             obj = create();
         } else {
-            obj = create(std::forward<Args>(args)...);
+            obj = create(forward<Args>(args)...);
         }
         
         if (!obj)
@@ -77,6 +77,28 @@ public:
         // Store object and its destroy function
         objects.emplace_back(obj, reinterpret_cast<void (*)(void*)>(destroy));
         return obj;
+    }
+
+    // Destroy a specific object created by the loader
+    template <typename T>
+    void destroy(T* obj_to_destroy) {
+        // Find the object in the vector
+        auto it = remove_if(objects.begin(), objects.end(),
+            [obj_to_destroy](const pair<void*, void (*)(void*)>& objPair) {
+                if (objPair.first == obj_to_destroy && objPair.second) {
+                    objPair.second(objPair.first); // Call the specific destroy function
+                    return true; // Mark for removal
+                }
+                return false;
+            });
+
+        if (it == objects.end()) {
+            // Object not found, might be an error or already destroyed externally
+            // For now, let's just log a warning or throw, depending on desired strictness.
+            // For this implementation, we'll throw an error.
+            throw ERROR("Attempted to destroy an object not managed by DynLoader or already destroyed.");
+        }
+        objects.erase(it, objects.end()); // Remove the destroyed object from the vector
     }
 
 private:
@@ -114,7 +136,7 @@ private:
             SEP_MODES // TODO: to parameter
         ); // TODO: to parameter
 
-        string libPath = fix_path(replace_extension(path, ".so"));
+        string libPath = get_absolute_path(replace_extension(path, ".so"));
         libPath = replaceToBuildPath(libPath, buildPath); // fixPath(path);
         
         auto it = libraries.find(libPath);
@@ -125,7 +147,7 @@ private:
         // rebuild only once before it really have to be loaded 
         // so that it does not take time to rebuild everything when debug builds
         
-        string cppPath = replace_extension(path, ".cpp");
+        string cppPath = get_absolute_path(replace_extension(path, ".cpp"));
     
         if (!file_exists(cppPath)) 
             throw ERROR("Cound not (re)build shared library, file not found: " 
@@ -191,3 +213,83 @@ private:
         }
     }
 };
+
+
+#ifdef TEST
+
+#include "TEST.hpp" // For the TEST macro and assert
+#include "str_contains.hpp" // For str_contains in exception testing
+#include "test_dummies/DummyLibraryInterface.hpp"
+
+// Using namespace std as per convention
+using namespace std;
+
+// Test case for DynLoader::destroy with a single object
+TEST(test_DynLoader_destroy_singleObject) {
+    //string output = 
+    capture_cout([&]() {
+        DynLoader loader;
+        DummyLibraryInterface* obj = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
+        assert(obj!= nullptr && "Object should be loaded.");
+        obj->greet(); // Verify object is functional
+
+        loader.destroy(obj); // Explicitly destroy the object
+        // At this point, obj should be freed and removed from loader's internal list.
+        // The destructor of DynLoader should not attempt to free it again.
+    });
+}
+
+// Test case for DynLoader::destroy with multiple objects and selective destruction
+TEST(test_DynLoader_destroy_multipleObjects_selective) {
+    //string output = 
+    capture_cout([&]() {
+
+        DynLoader loader;
+
+        DummyLibraryInterface* obj1 = nullptr;
+        DummyLibraryInterface* obj2 = nullptr;
+        DummyLibraryInterface* obj3 = nullptr;
+
+        obj1 = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
+        obj2 = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
+        obj3 = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
+
+        assert(obj1!= nullptr && "obj1 should be loaded.");
+        assert(obj2!= nullptr && "obj2 should be loaded.");
+        assert(obj3!= nullptr && "obj3 should be loaded.");
+
+        obj1->greet();
+        obj2->greet();
+        obj3->greet();
+
+        loader.destroy(obj2); // Destroy obj2
+        // obj1 and obj3 should still be managed by the loader
+        
+        // Attempting to destroy obj2 again should throw an error
+        bool threw = false;
+        try {
+            loader.destroy(obj2);
+        } catch (const exception& e) {
+            assert(str_contains(e.what(), "Attempted to destroy an object not managed by DynLoader or already destroyed.") && "Expected error message not found.");
+            threw = true;
+        }
+
+        assert(threw && "destroy(obj2) should throw an error on second call.");
+    });
+}
+
+// Test case for DynLoader destructor with remaining objects
+TEST(test_DynLoader_destructor_remainingObjects) {
+    //string output = 
+    capture_cout([&]() {
+        DynLoader loader;
+        DummyLibraryInterface* obj1 = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
+        DummyLibraryInterface* obj2 = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
+        assert(obj1!= nullptr && "obj1 should be loaded.");
+        assert(obj2!= nullptr && "obj2 should be loaded.");
+        
+        loader.destroy(obj1); // obj1 should be destroyed, obj2 remains
+    }); // loader goes out of scope, obj2 should be destroyed by DynLoader's destructor
+}
+
+#endif

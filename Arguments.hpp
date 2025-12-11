@@ -44,6 +44,7 @@ public:
     }
 
     void addHelp(const Key& key, const string& description) {
+        // TODO: validate that the key (and it's shorthand) is not already there?
         helps.key[key] = description;
     }
 
