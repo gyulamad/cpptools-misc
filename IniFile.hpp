@@ -17,13 +17,14 @@
 #include "IniData.hpp"
 #include "Logger.hpp"
 #include "file_exists.hpp"
+#include "get_absolute_path.hpp"
 
 using namespace std;
 
 class IniFile: public IniData {
 public:
     IniFile(
-        const string& filename = "", 
+        string filename = "", 
         bool load = false, 
         bool createIfNotExists = false, 
         bool throwsIfNotExists = false,
@@ -33,6 +34,7 @@ public:
         verbose(verbose)
     {
         if (!filename.empty()) {
+            filename = get_absolute_path(filename);
             if (load) this->load(filename, createIfNotExists, throwsIfNotExists);
             else if (!setFilename(filename, createIfNotExists, throwsIfNotExists)) 
                 throw ERROR("Unknown ini file error: " + filename);
@@ -122,7 +124,8 @@ protected:
     bool verbose = false;
 
     [[nodiscard]]
-    bool setFilename(const string& filename = "", bool createIfNotExists = false, bool throwsIfNotExists = false) {
+    bool setFilename(string filename = "", bool createIfNotExists = false, bool throwsIfNotExists = false) {
+        filename = filename.empty() ? "" : get_absolute_path(filename);
         bool changed = false;
 
         if (!filename.empty())

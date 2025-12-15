@@ -1,33 +1,37 @@
 #pragma once
 
-#include "Logger.hpp"
+#include "TEST.hpp"
+#include "ConsoleLogger.hpp"
+
 #include "Arguments.hpp"
 #include <functional>
 
 template<typename L, typename A>
 class App {
 public:
-    App() {}
-
-    virtual ~App() {
-        if (args) delete args;
-        args = nullptr;
+    App(int argc, char* argv[]): args(argc, argv) {
+        createLogger<ConsoleLogger>();
+        tester.run({ });
     }
 
-    int run(int argc, char* argv[]) {
-        try {
-            createLogger<L>();
-            args = new A(argc, argv);
-            process();
-        } catch (exception &e) {
-            LOG_ERROR("Exception" + EWHAT);
-            return 1;
-        }
-        return 0;
-    }
+    virtual ~App() {}
+
+    operator int() { return run(); }
 
 protected:
-    virtual void process() = 0;
 
-    A* args = nullptr;
+    int run() {
+        try {
+            createLogger<L>();
+            result = process();
+        } catch (exception &e) {
+            LOG_ERROR("Exception" + EWHAT);
+        }
+        return result;
+    }
+
+    virtual int process() = 0;
+
+    A args;
+    int result = 1;
 };
