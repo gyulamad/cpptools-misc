@@ -84,9 +84,10 @@ public:
     void destroy(T* obj_to_destroy) {
         // Find the object in the vector
         auto it = remove_if(objects.begin(), objects.end(),
-            [obj_to_destroy](const pair<void*, void (*)(void*)>& objPair) {
+            [&obj_to_destroy](const pair<void*, void (*)(void*)>& objPair) {
                 if (objPair.first == obj_to_destroy && objPair.second) {
-                    objPair.second(objPair.first); // Call the specific destroy function
+                    objPair.second(obj_to_destroy); // Call the specific destroy function
+                    obj_to_destroy = nullptr;
                     return true; // Mark for removal
                 }
                 return false;

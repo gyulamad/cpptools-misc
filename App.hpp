@@ -1,6 +1,5 @@
 #pragma once
 
-#include "TEST.hpp"
 #include "ConsoleLogger.hpp"
 
 #include "Arguments.hpp"
@@ -9,10 +8,7 @@
 template<typename L, typename A>
 class App {
 public:
-    App(int argc, char* argv[]): args(argc, argv) {
-        createLogger<ConsoleLogger>();
-        tester.run({ });
-    }
+    App(int argc, char* argv[]): args(argc, argv) {}
 
     virtual ~App() {}
 

@@ -10,6 +10,8 @@
 #include "parse.hpp"
 #include "safe.hpp"
 #include "foreach.hpp"
+#include "array_key_exists.hpp"
+#include "ShorthandGenerator.hpp"
 
 using namespace std;
 
@@ -43,9 +45,25 @@ public:
         helps.at[at] = { name, description };
     }
 
-    void addHelp(const Key& key, const string& description) {
-        // TODO: validate that the key (and it's shorthand) is not already there?
+    void addHelpByKey(const Key& key, const string& description) {
+        // validate that the key is already there?
+        if (array_key_exists(key, helps.key)) // TODO: also check if shorthand already exists!
+            throw ERROR("Help already set for key: " + key.first);
+        
+        Key final_key = key;
+        if (key.second.empty()) {
+            // Generate automatic shorthand
+            final_key.second = shorthand_gen.generate(key.first);
+        } else {
+            // Register the provided shorthand
+            shorthand_gen.registerShorthand(key.second);
+        }
+
         helps.key[key] = description;
+    }
+
+    void addHelp(const string& k, const string& description) {
+        addHelpByKey({ k, "" }, description);
     }
 
     bool hasHelp(const string& key) const {
@@ -149,7 +167,7 @@ public:
     }
     
     template<typename T>
-    T get(const Key& keys) const {
+    T getByKey(const Key& keys) const {
         if (has(keys.first, prefix)) return get<T>(keys.first, prefix);
         else if (has(keys.second, prefix_short)) return get<T>(keys.second, prefix_short);
         else 
@@ -158,13 +176,13 @@ public:
 
     // Templated getter with default value for key-based lookup
     template<typename T>
-    T get(const string& key, const T& defval, const string& prefix = "--") const {
+    T getopt(const string& key, const T& defval, const string& prefix = "--") const {
         return has(key, prefix) ? get<T>(key, prefix) : defval;
     }
 
     template<typename T>
-    T get(const Key& keys, const T& defval) const {
-        return has(keys) ? get<T>(keys) : defval;
+    T getoptByKey(const Key& keys, const T& defval) const {
+        return has(keys) ? getByKey<T>(keys) : defval;
     }
 
     // Templated getter for positional lookup
@@ -177,7 +195,7 @@ public:
 
     // Templated getter with default value for positional lookup
     template<typename T>
-    T get(size_t at, const T& defval) const {
+    T getopt(size_t at, const T& defval) const {
         return !has(at) ? defval : parse<T>(args[at]);
     }
 
@@ -203,6 +221,7 @@ protected:
             throw ERROR("Help is not provoded for argument '" + prefix + key + "'");
     }
 
+    ShorthandGenerator shorthand_gen;
     vector<string> args;
     Helps helps;
     string prefix = "--";
@@ -216,17 +235,17 @@ inline bool Arguments::get<bool>(const string& key, const string& prefix) const 
 }
 
 template<>
-inline bool Arguments::get<bool>(const string& key, const bool& defval, const string& prefix) const {
+inline bool Arguments::getopt<bool>(const string& key, const bool& defval, const string& prefix) const {
     return has(key, prefix) ? true : defval;
 }
 
 template<>
-inline bool Arguments::get<bool>(const Key& keys) const {
+inline bool Arguments::getByKey<bool>(const Key& keys) const {
     return has(keys);
 }
 
 template<>
-inline bool Arguments::get<bool>(const Key& keys, const bool& defval) const {
+inline bool Arguments::getoptByKey<bool>(const Key& keys, const bool& defval) const {
     return has(keys) ? true : defval;
 }
 
@@ -236,53 +255,53 @@ inline bool Arguments::get<bool>(const Key& keys, const bool& defval) const {
 #include "str_contains.hpp"
 
 TEST(test_Arguments_has_found) {
-    vector<string> arg_strings = {"program", "--flag"};
+    vector<string> arg_strings = { "program", "--flag" };
     vector<char*> argv;
     for (string& str : arg_strings) {
         argv.push_back(const_cast<char*>(str.c_str()));
     }
     Arguments args(static_cast<int>(argv.size()), argv.data());
-    args.addHelp({"flag", ""}, "Flag description");
+    args.addHelpByKey({ "flag", "" }, "Flag description");
     bool actual = args.has("flag");
     bool expected = true;
     assert(actual == expected && "Flag should be found");
 }
 
 TEST(test_Arguments_has_not_found) {
-    vector<string> arg_strings = {"program", "--flag"};
+    vector<string> arg_strings = { "program", "--flag" };
     vector<char*> argv;
     for (string& str : arg_strings) {
         argv.push_back(const_cast<char*>(str.c_str()));
     }
     Arguments args(static_cast<int>(argv.size()), argv.data());
-    args.addHelp({"flag", ""}, "Flag description");
-    args.addHelp({"missing", ""}, "We expect but user is not providing this");
+    args.addHelpByKey({ "flag", "" }, "Flag description");
+    args.addHelpByKey({"missing", ""}, "We expect but user is not providing this");
     bool actual = args.has("missing");
     bool expected = false;
     assert(actual == expected && "Missing flag should not be found");
 }
 
 TEST(test_Arguments_indexOf_found) {
-    vector<string> arg_strings = {"program", "--flag"};
+    vector<string> arg_strings = { "program", "--flag" };
     vector<char*> argv;
     for (string& str : arg_strings) {
         argv.push_back(const_cast<char*>(str.c_str()));
     }
     Arguments args(static_cast<int>(argv.size()), argv.data());
-    args.addHelp({"flag", ""}, "Flag description");
+    args.addHelpByKey({ "flag", "" }, "Flag description");
     long int actual = args.indexOf("flag");
     long int expected = 1;
     assert(actual == expected && "Index of flag should be 1");
 }
 
 TEST(test_Arguments_indexOf_not_found) {
-    vector<string> arg_strings = {"program", "--flag"};
+    vector<string> arg_strings = { "program", "--flag" };
     vector<char*> argv;
     for (string& str : arg_strings) {
         argv.push_back(const_cast<char*>(str.c_str()));
     }
     Arguments args(static_cast<int>(argv.size()), argv.data());
-    args.addHelp({"flag", ""}, "Flag description");
+    args.addHelpByKey({ "flag", "" }, "Flag description");
     long int actual = args.indexOf("missing");
     long int expected = -1;
     assert(actual == expected && "Index of missing flag should be -1");
@@ -300,7 +319,7 @@ Arguments createArgs(const vector<string>& input) {
 // Test has() with short flag
 TEST(test_Arguments_has_short_flag) {
     Arguments args = createArgs({"program", "-v"});
-    args.addHelp({ "verbose", "v" }, "Verbose description");
+    args.addHelpByKey({ "verbose", "v" }, "Verbose description");
     bool actual = args.has(pair("verbose", "v"));
     assert(actual == true && "Short flag -v should be detected");
 }
@@ -308,7 +327,7 @@ TEST(test_Arguments_has_short_flag) {
 // Test has() with missing short flag
 TEST(test_Arguments_has_short_flag_missing) {
     Arguments args = createArgs({"program"});
-    args.addHelp({ "verbose", "v" }, "Verbose description");
+    args.addHelpByKey({ "verbose", "v" }, "Verbose description");
     bool actual = args.has(pair("verbose", "v"));
     assert(actual == false && "Missing short flag -v should return false");
 }
@@ -316,35 +335,35 @@ TEST(test_Arguments_has_short_flag_missing) {
 // Test get<bool> with short flag
 TEST(test_Arguments_get_bool_short_flag) {
     Arguments args = createArgs({"program", "-v"});
-    args.addHelp({ "verbose", "v" }, "Verbose description");
-    bool actual = args.get<bool>(pair("verbose", "v"));
+    args.addHelpByKey({ "verbose", "v" }, "Verbose description");
+    bool actual = args.getByKey<bool>(pair("verbose", "v"));
     assert(actual == true && "Short flag -v should return true for bool");
 }
 
 // Test get<bool> with short flag and default value
 TEST(test_Arguments_get_bool_short_flag_default) {
     Arguments args = createArgs({"program"});
-    args.addHelp({ "verbose", "v" }, "Verbose description");
-    bool actual = args.get<bool>(pair("verbose", "v"), false);
+    args.addHelpByKey({ "verbose", "v" }, "Verbose description");
+    bool actual = args.getoptByKey<bool>(Arguments::Key("verbose", "v"), false);
     assert(actual == false && "Missing short flag -v should return default false");
 }
 
 // Test get<int> with short flag and value
 TEST(test_Arguments_get_int_short_flag_value) {
     Arguments args = createArgs({"program", "-c", "42"});
-    args.addHelp({ "count", "c" }, "Count description");
-    int actual = args.get<int>(pair("count", "c"));
+    args.addHelpByKey({ "count", "c" }, "Count description");
+    int actual = args.getByKey<int>(pair("count", "c"));
     assert(actual == 42 && "Short flag -c with value 42 should return 42");
 }
 
 // Test get<int> with short flag missing value
 TEST(test_Arguments_get_int_short_flag_missing_value) {
     Arguments args = createArgs({"program", "-c"});
-    args.addHelp({ "count", "c" }, "Test argument");
+    args.addHelpByKey({ "count", "c" }, "Test argument");
     bool thrown = false;
     string what;
     try {
-        args.get<int>(pair("count", "c"));
+        args.getByKey<int>(pair("count", "c"));
     } catch (exception& e) {
         thrown = true;
         what = e.what();
@@ -356,24 +375,24 @@ TEST(test_Arguments_get_int_short_flag_missing_value) {
 // Test get<string> with short flag and value
 TEST(test_Arguments_get_string_short_flag_value) {
     Arguments args = createArgs({"program", "-f", "data.txt"});
-    args.addHelp({ "file", "f" }, "File description");
-    string actual = args.get<string>(pair("file", "f"));
+    args.addHelpByKey({ "file", "f" }, "File description");
+    string actual = args.getByKey<string>(pair("file", "f"));
     assert(actual == "data.txt" && "Short flag -f with value data.txt should return data.txt");
 }
 
 // Test get<int> with short flag and default value
 TEST(test_Arguments_get_int_short_flag_default) {
     Arguments args = createArgs({"program"});
-    args.addHelp({ "count", "c" }, "Count description");
-    int actual = args.get<int>(pair("count", "c"), 10);
+    args.addHelpByKey({ "count", "c" }, "Count description");
+    int actual = args.getoptByKey<int>(Arguments::Key("count", "c"), 10);
     assert(actual == 10 && "Missing short flag -c should return default 10");
 }
 
 // Test get<int> with both long and short flags present (long takes precedence)
 TEST(test_Arguments_get_int_short_and_long_flags) {
     Arguments args = createArgs({"program", "--count", "100", "-c", "42"});
-    args.addHelp({ "count", "c" }, "Count description");
-    int actual = args.get<int>(pair("count", "c"));
+    args.addHelpByKey({ "count", "c" }, "Count description");
+    int actual = args.getByKey<int>(pair("count", "c"));
     assert(actual == 100 && "Long flag --count should take precedence over -c");
 }
 

@@ -63,6 +63,13 @@ public:
     }
 
     template<typename T>
+    T getopt(const string& key, const T defval, const string& section = "") const {
+        if (!has(key, section)) 
+            return defval;
+        return parse<T>(data.at(section).at(key));
+    }
+
+    template<typename T>
     void set(const string& key, T value, const string& section = "") {
         string newval = this->as_string(value);
         if (newval != data[section][key]) {

@@ -149,6 +149,7 @@ Logger* logger() { return LoggerFactory::getLogger(); }
 #define LOG_NOTE(msg) SAFE(logger())->note(std::string("") + msg, FILELN, false)
 #define LOG_OK(msg) SAFE(logger())->success(std::string("") + msg, FILELN, false)
 #define LOG_DEBUG(msg) SAFE(logger())->debug(std::string("") + msg, FILELN, false)
+#define LOG_DUMP(var) SAFE(logger())->debug(std::string(#var) + ": " + std::to_string(var), FILELN, false)
 
 #define LOG(msg) LOG_NOTE(msg)
 #define DBG(msg) LOG_DEBUG(msg)
