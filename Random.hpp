@@ -10,7 +10,10 @@ class Random {
 public:
     Random() { this->init(); }
     explicit Random(unsigned int seed) { this->seed(seed); }
-    virtual ~Random() {}
+    
+    virtual ~Random() {
+        if (engine) close();
+    }
 
     T* getEngine() const { return engine; }
     
