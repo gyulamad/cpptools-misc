@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vector>
-#include "vector_concat.hpp"
-
 using namespace std;
 
 template<typename S, typename T>

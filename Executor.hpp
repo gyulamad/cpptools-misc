@@ -1,14 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <string>
 #include <array>
-#include <memory>
-#include <cstdio>
-#include <unistd.h>
 #include <sys/wait.h>
-#include <cstring>
-
 #include "ERROR.hpp"
 
 using namespace std;
@@ -107,7 +101,6 @@ public:
 
 #ifdef TEST
 
-#include <fcntl.h>
 #include "capture_cout.hpp"
 
 // Test struct for complex test cases

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "str_diff_t.hpp"        // For the diff structure
+#include "str_diff_t.hpp"
 
 using namespace std;
 

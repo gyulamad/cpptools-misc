@@ -1,17 +1,5 @@
 #pragma once
 
-/** Usage Example: *************************************
-
-
-
-****************************************************** */
-
-#include <vector>
-#include <unordered_set>
-#include "array_unique.hpp"
-#include "array_slice.hpp"
-#include "Logger.hpp"
-
 using namespace std;
 
 template<typename T>
@@ -139,7 +127,6 @@ protected:
 
 #ifdef TEST
 
-#include <string>
 #include "str_contains.hpp"
 
 TEST(test_Sequence_basic_operations) {

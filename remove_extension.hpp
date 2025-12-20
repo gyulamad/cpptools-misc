@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-
 #include "explode.hpp"
 #include "implode.hpp"
 
@@ -17,7 +16,6 @@ string remove_extension(const string& fname) {
 }
 
 #ifdef TEST
-#include "str_contains.hpp"
 
 // Tests for remove_extension
 TEST(test_remove_extension_single_extension) {

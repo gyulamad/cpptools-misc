@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Logger.hpp"
 #include "IniData.hpp"
 #include "IniFile.hpp"
 

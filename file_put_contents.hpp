@@ -1,9 +1,8 @@
 #pragma once
 
 #include <string>
-#include <iostream>
+#include <ios>
 #include <fstream>
-
 #include "ERROR.hpp"
 
 using namespace std;

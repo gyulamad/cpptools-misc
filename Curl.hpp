@@ -1,14 +1,17 @@
 #pragma once
 
-#include <iostream>
+// DEPENDENCY: curl
+
 #include <string>
-#include <cstring>
 #include <functional>
-#include <vector>
-#include <mutex>
 #include <atomic>
-#include <memory>
 #include <curl/curl.h>
+#include <exception>
+#include <mutex>
+#include <memory>
+#include <iostream>
+#include <cstring>
+#include <vector>
 
 using namespace std;
     

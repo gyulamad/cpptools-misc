@@ -1,9 +1,7 @@
 #pragma once
 
-#include "ConsoleLogger.hpp"
-
-#include "Arguments.hpp"
-#include <functional>
+#include "Logger.hpp"
+#include "EWHAT.hpp"
 
 template<typename L, typename A>
 class App {
@@ -22,6 +20,7 @@ protected:
             result = process();
         } catch (exception &e) {
             LOG_ERROR("Exception" + EWHAT);
+            result = 1;
         }
         return result;
     }
@@ -29,5 +28,5 @@ protected:
     virtual int process() = 0;
 
     A args;
-    int result = 1;
+    int result = 0;
 };

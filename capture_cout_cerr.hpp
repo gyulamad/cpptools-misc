@@ -1,12 +1,10 @@
 #pragma once
 
-#include <string>
 #include <functional>
 #include <iostream>
-#include <sstream>
-
-#include "ERROR.hpp"
 #include "TeeStreamBuf.hpp"
+#include <sstream>
+#include "ERROR.hpp"
 
 using namespace std;
 
@@ -40,7 +38,7 @@ string capture_cout_cerr(function<void()> func, bool show = false) {
     cerr.clear();
     string output = buffer.str();
     if (!ewhat.empty()) 
-        throw ERROR("Exception in stdout and stderr capture: " + ewhat + 
+        throw runtime_error(string("Exception in stdout and stderr capture: ") + ewhat + 
             (output.empty() ? "" : "\nOutput captured:\n" + output));
     return output;
 }

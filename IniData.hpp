@@ -2,10 +2,12 @@
 
 #include "array_keys.hpp"
 #include "array_values.hpp"
+#include <unordered_map>
+#include "in_array.hpp"
 #include "array_key_exists.hpp"
+#include "EMPTY_OR.hpp"
+#include "ERROR.hpp"
 #include "parse.hpp"
-
-#include <string>
 
 using namespace std;
 

@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
 #include <vector>
-
 #include "str_diff_t.hpp"
 #include "str_get_diffs.hpp"
 #include "str_show_diff.hpp"
@@ -20,12 +18,7 @@ vector<str_diff_t> str_diffs_show(const string& s1, const string& s2) {
  
 #ifdef TEST
 
-#include <iostream> // For cout (used by str_show_diff)
-#include <vector>
-#include <string>
-#include <functional> // For function<> in capture_cout_cerr
-
-#include "F.hpp" // For ANSI codes used in expected output
+#include "F.hpp" // For ANSI codes used in expected outpu
 #include "compare_diff_vectors.hpp"
 
 using namespace std;

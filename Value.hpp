@@ -1,20 +1,22 @@
 #pragma once
 
-#include <iostream>
-#include <cmath>
-#include <stdint.h>
 #include "Serializable.hpp"
 #include "Stringable.hpp"
 #include "Dumpable.hpp"
-#include "ERROR.hpp"
-#include "str_serialize.hpp"
-#include "str_deserialize.hpp"
 #include "implode.hpp"
+#include "array_shift.hpp"
+#include <stdint.h>
+#include <unordered_map>
+#include <cmath>
+#include "EWHAT.hpp"
 #include "explode.hpp"
 #include "trim.hpp"
-#include "array_shift.hpp"
 #include "parse.hpp"
+#include "EMPTY_OR.hpp"
+#include <iostream>
+#include "str_serialize.hpp"
 #include "cast.hpp"
+#include "str_deserialize.hpp"
 
 using namespace std;
 

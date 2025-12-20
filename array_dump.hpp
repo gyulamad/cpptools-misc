@@ -1,10 +1,8 @@
 #pragma once
-
 #include <string>
 #include <vector>
 #include <iostream>
 #include "implode.hpp"
-#include "capture_cout.hpp"
 
 using namespace std;
 
@@ -24,6 +22,8 @@ string array_dump(const vector<T>& vec, bool show = false) {
     
 
 #ifdef TEST
+
+#include "capture_cout.hpp"
 
 TEST(test_array_dump_basic) {
     vector<int> vec = {1, 2, 3};

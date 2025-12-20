@@ -2,7 +2,6 @@
 
 #include "ERROR.hpp"
 #include "Logger.hpp"
-
 #include <fstream>
 
 using namespace std;

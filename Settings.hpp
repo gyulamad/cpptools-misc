@@ -4,11 +4,9 @@
 #include "JSON.hpp"
 #include "JSONExts.hpp"
 #include "Arguments.hpp"
-
 #include <string>
 #include <vector>
 #include <map>
-#include <type_traits>
 
 using namespace std;
 

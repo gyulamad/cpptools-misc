@@ -1,9 +1,8 @@
 #pragma once
 
-#include <string>
 #include <set>
+#include <string>
 #include <vector>
-#include <cctype>
 
 using namespace std;
 
@@ -130,8 +129,6 @@ private:
 };
 
 #ifdef TEST
-
-#include <iostream>
 
 // Test Strategy 1: First character
 TEST(test_ShorthandGenerator_first_character) {

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <fstream>
 #include <string>
-#include <filesystem> // Requires C++17 or later
-#include <system_error>
-
-#include "ERROR.hpp"
-#include "get_filename.hpp"
+#include "is_dir.hpp"
 #include "fix_path.hpp"
+#include "get_filename.hpp"
+#include "ERROR.hpp"
+#include "file_exists.hpp"
+#include "unlink.hpp"
+#include "EWHAT.hpp"
 
 using namespace std;
 

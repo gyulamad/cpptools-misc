@@ -1,14 +1,10 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <sstream>
-#include <limits>
-
-#include "ERROR.hpp"
-#include "str_cut_end.hpp"
 #include "in_array.hpp"
+#include <algorithm>
+#include "EMPTY_OR.hpp"
+#include "ERROR.hpp"
+#include <vector>
 
 using namespace std;
 

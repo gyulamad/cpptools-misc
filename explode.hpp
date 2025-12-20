@@ -1,8 +1,7 @@
 #pragma once
 
-#include <string>
 #include <vector>
-
+#include <string>
 #include "ERROR.hpp"
 
 using namespace std;

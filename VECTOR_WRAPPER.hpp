@@ -20,6 +20,4 @@
 //     void clear() { v.clear(); }
 */
 
-
-
 #define VECTOR_WRAPPER(T, v) STORAGE_WRAPPER(vector, T, v)

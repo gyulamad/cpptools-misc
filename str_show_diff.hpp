@@ -1,9 +1,8 @@
 #pragma once
 
+#include <string>
 #include <iostream>
-
 #include "F.hpp"
-
 #include "str_diff_t.hpp"
 
 using namespace std;

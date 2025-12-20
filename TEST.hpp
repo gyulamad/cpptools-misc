@@ -9,16 +9,15 @@
 #ifdef TEST
 #undef TEST
 
-#include <iostream>
-#include <map>
-
+#include <string>
+#include <vector>
 #include "ERROR.hpp"
-#include "ConsoleLogger.hpp"
-#include "F.hpp"
+#include <map>
 #include "str_contains.hpp"
 #include "capture_cout_cerr.hpp"
 #include "implode.hpp"
-#include "explode.hpp"
+#include <iostream>
+#include "ConsoleLogger.hpp"
 
 using namespace std;
 
@@ -179,13 +178,11 @@ struct struct_of_##name { \
 } instance_of_##name; \
 void name()
 
-#else // TEST
+#else
 
-#include <string>
-#include <vector>
 #include "ERROR.hpp"
-
-using namespace std;
+#include <vector>
+#include <string>
 
 struct { 
     void run(vector<string> filters = {}) {

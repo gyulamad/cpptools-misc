@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "remove_extension.hpp"
 #include "str_starts_with.hpp"
 
@@ -12,7 +10,6 @@ string replace_extension(const string& fname, const string& newext) {
 }
 
 #ifdef TEST
-#include "str_contains.hpp"
 
 // Tests for replace_extension
 TEST(test_replace_extension_add_new_extension) {

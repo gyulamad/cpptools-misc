@@ -1,8 +1,5 @@
 #pragma once
 
-#include <thread>
-
-#include "datetime_defs.hpp"
 #include "default_get_time_ms.hpp"
 
 using namespace std;
@@ -14,6 +11,10 @@ time_ms (*get_time_ms)() = default_get_time_ms;
 
 
 #ifdef TEST
+
+#include <thread>
+#include <chrono>
+
 
 // Test that get_time_ms returns a reasonable current time
 TEST(test_get_time_ms_current) {

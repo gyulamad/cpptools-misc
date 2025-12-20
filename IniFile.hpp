@@ -1,23 +1,15 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include "Logger.hpp"
-#include "ERROR.hpp"
-#include "explode.hpp"
-#include "file_get_contents.hpp"
-#include "file_put_contents.hpp"
-#include "trim.hpp"
-#include "foreach.hpp"
-#include "array_key_exists.hpp"
-#include "array_keys.hpp"
-#include "array_values.hpp"
-#include "parse.hpp"
-#include "safe.hpp"
-#include "IniData.hpp"
-#include "Logger.hpp"
-#include "file_exists.hpp"
 #include "get_absolute_path.hpp"
+#include "file_get_contents.hpp"
+#include "explode.hpp"
+#include "trim.hpp"
+#include "file_put_contents.hpp"
+#include "file_exists.hpp"
+#include "Logger.hpp"
+#include "EWHAT.hpp"
+#include <functional>
+#include "IniData.hpp"
 
 using namespace std;
 

@@ -2,17 +2,15 @@
 
 #include <string>
 #include <map>
-
-#include "ERROR.hpp"
 #include "regx_match.hpp"
+#include "ERROR.hpp"
+#include "str_cut_end.hpp"
+#include "str_contains.hpp"
 #include "regx_match_all.hpp"
 #include "array_keys.hpp"
 #include "in_array.hpp"
 #include "implode.hpp"
-
-#include "str_cut_end.hpp"
 #include "str_replace.hpp"
-#include "str_contains.hpp"
 
 using namespace std;
 

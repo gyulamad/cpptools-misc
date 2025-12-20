@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ERROR.hpp"
 #include "Logger.hpp"
-
+#include "ERROR.hpp"
 #include <iostream>
 #include <fstream>
 

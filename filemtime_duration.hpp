@@ -1,8 +1,8 @@
 #pragma once
 
 #include <chrono>
-#include <filesystem> // Requires C++17 or later
 #include "ERROR.hpp"
+#include <filesystem>
 
 using namespace std;
 

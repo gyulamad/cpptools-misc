@@ -1,29 +1,8 @@
 #pragma once
 
 #include <dlfcn.h>
-#include <string>
-#include <stdexcept>
-#include <unordered_map>
-#include <vector>
-#include <tuple>
-
-#include "ERROR.hpp"
-#include "get_absolute_path.hpp"
-#include "Logger.hpp"
-#include "F.hpp"
-#include "replace_extension.hpp"
-#include "remove_extension.hpp"
-// #include "execute.hpp"
-#include "file_exists.hpp"
-#include "highlight_compiler_outputs.hpp"
-#include "Executor.hpp"
-#include "__DIR__.hpp"
-#include "get_filename_only.hpp"
-#include "get_extension_only.hpp"
 #include "sort.hpp"
-
 #include "../../autobuild/Builder.hpp"
-#include "../../autobuild/Dependency.hpp"
 
 using namespace std;
 
@@ -218,8 +197,7 @@ private:
 
 #ifdef TEST
 
-#include "TEST.hpp" // For the TEST macro and assert
-#include "str_contains.hpp" // For str_contains in exception testing
+#include "str_contains.hpp"
 #include "test_dummies/DummyLibraryInterface.hpp"
 
 // Using namespace std as per convention

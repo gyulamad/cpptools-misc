@@ -1,13 +1,11 @@
 #pragma once
 
-#include <string>
-
 // NOTE: Do not compiles with -Ofast + -fsanitize=address
 //       or use: __attribute__((optimize("O0")))
 //       or: #pragma GCC optimize("O0")
-// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105562#c27
-#include <regex>
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105562#c2
 
+#include <regex>
 #include "ERROR.hpp"
 
 using namespace std;

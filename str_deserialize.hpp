@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include "cast.hpp"
 #include "ERROR.hpp"
 
 using namespace std;

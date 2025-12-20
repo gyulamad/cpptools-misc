@@ -4,7 +4,6 @@
 #include <cerrno>
 #include <unistd.h>
 #include <string.h>
-
 #include "ERROR.hpp"
 
 using namespace std;

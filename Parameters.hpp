@@ -2,8 +2,6 @@
 
 #include "Initializable.hpp"
 
-#include <string>
-
 using namespace std;
 
 class Parameters: public Initializable {

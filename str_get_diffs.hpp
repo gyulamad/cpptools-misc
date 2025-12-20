@@ -1,10 +1,8 @@
 #pragma once
 
-#include <string>
 #include <vector>
-
-#include "explode.hpp"
 #include "str_diff_t.hpp"
+#include "explode.hpp"
 
 using namespace std;
 
@@ -55,16 +53,12 @@ vector<str_diff_t> str_get_diffs(const string& s1, const string& s2) {
  
 #ifdef TEST
 
-#include <vector>
-#include <string>
-#include <iostream> // Included for debug in compare_diff_vectors
-
 #include "str_diff_t.hpp"        // For the diff structure
 
 using namespace std;
 
 // Helper to compare str_diff_t vectors (essential for testing)
-// Note: Assumes vector<string> comparison works as expected.
+// Note: Assumes vector<string> comparison works as expected
 #include "compare_diff_vectors.hpp"
 
 // --- Test Cases ---

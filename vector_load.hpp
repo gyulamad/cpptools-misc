@@ -3,8 +3,6 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <type_traits>
-
 #include "ERROR.hpp"
 
 using namespace std;
@@ -44,8 +42,8 @@ void vector_load(vector<T>& vec, const string& filename) {
 
 #ifdef TEST
 
-#include "vector_equal.hpp"
 #include "vector_save.hpp"
+#include "vector_equal.hpp"
 
 TEST(test_vector_load_success) {
     vector<int> vec;

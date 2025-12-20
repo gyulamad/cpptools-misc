@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Canvas.hpp"
-
-#include <FL/Fl.H>
-#include <FL/Fl_Box.H>
 #include <FL/fl_draw.H>
+#include "Canvas.hpp"
+#include <FL/Fl_Box.H>
+#include <FL/Fl.H>
 
 // FLTK Canvas implementation
 class Fl_CanvasBox: public Fl_Box, public Canvas {

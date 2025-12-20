@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Logger.hpp"
 #include <iostream>
+#include "Logger.hpp"
 
 using namespace std;
 

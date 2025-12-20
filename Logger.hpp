@@ -1,13 +1,11 @@
 #pragma once
 
-#include <string>
 #include <map>
-#include <thread>
 #include <atomic>
 #include <mutex>
+#include <string>
 #include "ms_to_datetime.hpp"
 #include "safe.hpp"
-#include "F.hpp"
 
 using namespace std;
 
@@ -153,6 +151,7 @@ Logger* logger() { return LoggerFactory::getLogger(); }
 
 #define LOG(msg) LOG_NOTE(msg)
 #define DBG(msg) LOG_DEBUG(msg)
+#define DUMP(var) LOG_DUMP(var)
 
 #define LOG_OR_THROW(msg) { \
     string errmsg = msg + EWHAT; \

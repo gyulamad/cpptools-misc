@@ -4,7 +4,6 @@
 #include <functional>
 #include <iostream>
 #include <sstream>
-
 #include "ERROR.hpp"
 #include "TeeStreamBuf.hpp"
 

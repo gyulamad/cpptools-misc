@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "default_get_time_sec.hpp"
 
 using namespace std;

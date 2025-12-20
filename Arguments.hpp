@@ -1,17 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <map>
-
-#include "ERROR.hpp"
-#include "str_starts_with.hpp"
-#include "parse.hpp"
-#include "safe.hpp"
-#include "foreach.hpp"
-#include "array_key_exists.hpp"
 #include "ShorthandGenerator.hpp"
+#include "array_key_exists.hpp"
+#include "parse.hpp"
+#include "str_starts_with.hpp"
 
 using namespace std;
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../App.hpp"
-
 template<typename A>
 class FileLoggerApp: public App<FileLogger, A> {
 public:

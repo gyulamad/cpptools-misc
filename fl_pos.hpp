@@ -1,7 +1,6 @@
 #pragma once
 
 #include <FL/Fl_Widget.H>
-
 #include <vector>
 
 using namespace std;
