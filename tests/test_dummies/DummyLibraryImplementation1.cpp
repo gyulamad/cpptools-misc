@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "../EXTERN.hpp"
+#include "../../EXTERN.hpp"
 #include "DummyLibraryInterface.hpp"
 
 using namespace std;

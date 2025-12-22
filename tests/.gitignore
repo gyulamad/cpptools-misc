@@ -1,2 +1,2 @@
-builder
-.build*
+.build/
+.build-*/

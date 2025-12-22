@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../TEST.hpp"
-#include "../str_starts_with.hpp"
+#include "../str_ends_with.hpp"
 
 #ifdef TEST
 
