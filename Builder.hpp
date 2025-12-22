@@ -249,7 +249,8 @@ protected:
         const string libClassName = ucfirst(library) + "Dependency";
         const string libPathName = get_absolute_path (
             /*__DIR__ + "/" +*/ DIR_DEPENDENCIES + "/"
-            + creator + "/" + library + "/" + libClassName
+            + creator + "/" + library + "/" + libClassName,
+            false
         );
         if (verbose) {
             // lock_guard<mutex> outputLock(outputMutex);
