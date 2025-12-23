@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -16,5 +17,12 @@ string trim(const string& str, const string& chrs = " \t\n\r\f\v") {
 
     // Return the substring from the first non-whitespace to the last non-whitespace character
     return str.substr(start, end - start + 1);
+}
+
+vector<string> trim(const vector<string>& strs, const string& chrs = " \t\n\r\f\v") {
+    vector<string> trms;
+    for (const string& str: strs)
+        trms.push_back(trim(str, chrs));
+    return trms;
 }
 

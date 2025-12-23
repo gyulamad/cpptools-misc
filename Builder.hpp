@@ -34,13 +34,37 @@
 #include "array_shift.hpp"
 #include "sort.hpp"
 #include "array_remove.hpp"
+#include "sort.hpp"
+#include "array_unique.hpp"
+#include "trim.hpp"
+#include "QUOTEME.hpp"
 
 using namespace std;
+
+const vector<string> 
+BUILDER_DEFAULT_MODES = 
+#ifdef BUILDER_MODES
+    sort(array_unique(array_remove(trim(explode(",", BUILDER_MODES)), "")))
+#else
+    {}
+#endif
+;
+
+const bool 
+BUILDER_DEFAULT_VERBOSE = 
+#ifdef BUILDER_VERBOSE
+    true
+#else
+    false
+#endif
+;
+
 
 class Builder {
 public:
     Builder(
-        vector<string> modes, bool verbose
+        const vector<string>& modes = BUILDER_DEFAULT_MODES, 
+        bool verbose = BUILDER_DEFAULT_VERBOSE
     ): 
         // DynLoader(modes, verbose)
         modes(modes), 
@@ -60,6 +84,7 @@ public:
                 dlclose(libPair.second.handle);
     }
 
+    void setModes(const vector<string>& modes) { this->modes = modes; }
     void setVerbose(bool verbose) { this->verbose = verbose; }
 
 
@@ -334,8 +359,6 @@ protected:
             for (const string& implementation: implementations)
                 local_max = max(local_max, filemtime_ms(implementation));
 
-            lastfmtime = max(lastfmtime, local_max);
-
             if (filemtime_ms(cacheFile) < local_max) {
                 unlink(cacheFile);
                 if (file_exists(cacheFile))
@@ -344,6 +367,7 @@ protected:
                 mappedSourceFilesToDeps.erase(sourceFile);
                 if (verbose) LOG("Dependency cache invalidated, source file need to revisit...");
             } else {
+                lastfmtime = max(lastfmtime, local_max);
                 mappedSourceFilesToDeps[sourceFile] = { includes, implementations, dependencies };
                 return mappedSourceFilesToDeps[sourceFile];
             }
@@ -481,6 +505,8 @@ protected:
                             maxPchThreads
                         );
                     includes = array_merge(includes, cache[0]);
+                    implementations = array_merge(implementations, cache[1]);
+                    dependencies = array_merge(dependencies, cache[2]);
 
                     // look up for implementations...
                     implementations = lookupFileInIncludeDirs(
@@ -494,6 +520,11 @@ protected:
                     foundImplementations = array_merge(
                         foundImplementations,
                         implementations
+                    );
+
+                    foundDependencies = array_merge(
+                        foundDependencies,
+                        dependencies
                     );
                 }
             }
@@ -612,7 +643,7 @@ protected:
                 throw ERROR("Include not found: " + include);
         }
         if (verbose && !results.empty()) {
-            LOG("Implementation(s) found.");
+            LOG("Source code(s) found.");
         }
         return results;
     }
@@ -628,6 +659,7 @@ protected:
         #ifdef DEBUG
         modes.push_back("debug");
         #endif
+        modes = array_unique(modes);
         sort(modes);
 
         if (verbose) LOG("Attempt to load shared library: " + F(F_FILE, path) + " (modes: " + (!modes.empty() ? implode(",", modes) : "<none>") + ")");

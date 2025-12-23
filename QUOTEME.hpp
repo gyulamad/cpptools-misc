@@ -1,4 +1,4 @@
 #pragma once
 
-#define QUOTEME_1(x) #x
-#define QUOTEME(x) QUOTEME_1(x)
+#define QUOTEME_CSTR(x) #x
+#define QUOTEME(x) QUOTEME_CSTR(x)

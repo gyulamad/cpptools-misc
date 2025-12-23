@@ -19,7 +19,7 @@ using namespace std;
 TEST(test_Builder_destroy_singleObject) {
     //string output = 
     capture_cout([&]() {
-        Builder loader({}, false);
+        Builder loader;
         DummyLibraryInterface* obj = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
         assert(obj!= nullptr && "Object should be loaded.");
         obj->greet(); // Verify object is functional
@@ -35,7 +35,7 @@ TEST(test_Builder_destroy_multipleObjects_selective) {
     //string output = 
     capture_cout([&]() {
 
-        Builder loader({}, false);
+        Builder loader;
 
         DummyLibraryInterface* obj1 = nullptr;
         DummyLibraryInterface* obj2 = nullptr;
@@ -73,7 +73,7 @@ TEST(test_Builder_destroy_multipleObjects_selective) {
 TEST(test_Builder_destructor_remainingObjects) {
     //string output = 
     capture_cout([&]() {
-        Builder loader({}, false);
+        Builder loader;
         DummyLibraryInterface* obj1 = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
         DummyLibraryInterface* obj2 = loader.load<DummyLibraryInterface>(__DIR__ + "/test_dummies/DummyLibraryImplementation1");
         assert(obj1!= nullptr && "obj1 should be loaded.");

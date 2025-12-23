@@ -92,9 +92,9 @@ protected:
 
     // TODO: move this into dependencies
     // "libs" arguments are added with '-l...' flag but we can override it to simplify things
-    const unordered_map<string, string> libArgs = {
-        { "fltk" , "`fltk-config --cxxflags --ldflags` -lfltk -lfltk_images" },
-    };
+    // const unordered_map<string, string> libArgs = {
+    //     { "fltk" , "`fltk-config --cxxflags --ldflags` -lfltk -lfltk_images" },
+    // };
 
 
     // enum BuildType { BT_EXECUTABLE, BT_PRECOMPILED_HEADER };
@@ -166,8 +166,9 @@ protected:
         vector<string> libs;
         if (args.has(PRM_LIBS) && !args.getByKey<string>(PRM_LIBS).empty()) {
             for (const string& lib: explode(SEP_PRMS, args.getByKey<string>(PRM_LIBS)))
-                if (array_key_exists(lib, libArgs)) libs.push_back(libArgs.at(lib));
-                else libs.push_back(FLAG_LIBRARY + lib);
+                // if (array_key_exists(lib, libArgs)) libs.push_back(libArgs.at(lib));
+                // else 
+                libs.push_back(FLAG_LIBRARY + lib);
         }
         
         // When "shared" argument (yes/no) is set then compile a shared library
@@ -180,7 +181,7 @@ protected:
         
         // "mode" argument (multiple) selects the used compiler flags from "modeFlags" map
         vector<string> flags = shared ? array_merge(FLAGS, FLAGS_SHARED) : FLAGS;
-        vector<string> modes;
+        
         if (args.has(PRM_MODE) && !args.getByKey<string>(PRM_MODE).empty()) {
             modes = explode(SEP_PRMS, args.getByKey<string>(PRM_MODE));
             for (const string& mode: modes)
@@ -188,12 +189,16 @@ protected:
                 else 
                     throw ERROR("Mode flags are undefined: " + EMPTY_OR(mode));
         }
+        modes = array_unique(modes);
         sort(modes);
         if (verbose) LOG("Builder processing" + (!modes.empty() ? " with modes (from arguments): " + implode(",", modes) : "..."));
 
         // Additional parameters to build process
         if (args.has(PRM_ARGS))
             flags = array_merge(flags, explode(" ", args.getByKey<string>(PRM_ARGS)));
+        // push default behaviours into the build:
+        if (!modes.empty()) flags.push_back("-DBUILDER_MODES=\\\"" + implode(",", modes) + "\\\"");
+        if (verbose) flags.push_back("-DBUILDER_VERBOSE");
 
         // "coverage" argument (on/off) creates coverage report
         const bool coverage = in_array(MODE_COVERAGE, modes);
