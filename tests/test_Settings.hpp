@@ -58,6 +58,7 @@ TEST(test_Settings_hash_no_conf) {
 TEST(test_Settings_has_single_key_args) {
     char* argv[] = {(char*)"program", (char*)"--flag"};
     Arguments args(2, argv);
+    args.addHelp("flag", "a flag");
     Settings settings(args);
     bool actual = settings.has("flag");
     assert(actual == true && "Should find key in args");
@@ -98,6 +99,7 @@ TEST(test_Settings_get_priority_args_over_conf) {
     json.set("key", 1);
     char* argv[] = {(char*)"program", (char*)"--key", (char*)"2"};
     Arguments args(3, argv);
+    args.addHelp("key", "a key");
     Settings settings(json, args);
     int actual = settings.get<int>("key");
     assert(actual == 2 && "Args should take priority over conf");
@@ -106,6 +108,7 @@ TEST(test_Settings_get_priority_args_over_conf) {
 TEST(test_Settings_get_pair_from_args) {
     char* argv[] = {(char*)"program", (char*)"--flag", (char*)"true"};
     Arguments args(3, argv);
+    args.addHelp("flag", "a flag");
     Settings settings(args);
     bool actual = settings.get<bool>(pair<string, string>("flag", "other"));
     assert(actual == true && "Should get value from args using pair key");

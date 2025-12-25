@@ -8,7 +8,7 @@ using namespace std;
 
 // Remove all occurrences of elem and return a new vector (non-modifying)
 template <typename T>
-vector<T> array_remove(const vector<T>& vec, const T& elem) {
+[[nodiscard]] vector<T> array_remove(const vector<T>& vec, const T& elem) {
     vector<T> result;
     result.reserve(vec.size()); // avoid repeated reallocations
 
@@ -21,6 +21,6 @@ vector<T> array_remove(const vector<T>& vec, const T& elem) {
 
 // Convenience overload for string literals when the vector contains strings
 template <typename T>
-vector<T> array_remove(const vector<T>& vec, const char* elem) {
+[[nodiscard]] vector<T> array_remove(const vector<T>& vec, const char* elem) {
     return array_remove(vec, T(elem));
 }

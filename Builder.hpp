@@ -38,6 +38,7 @@
 #include "array_unique.hpp"
 #include "trim.hpp"
 #include "QUOTEME.hpp"
+#include "array_key_exists.hpp"
 
 using namespace std;
 
@@ -59,6 +60,11 @@ BUILDER_DEFAULT_VERBOSE =
 #endif
 ;
 
+struct DependencyArgumentPlugins {
+    vector<string> dependencyFlags;
+    vector<string> dependencyLibs;
+    vector<string> dependencyIncs;
+};
 
 class Builder {
 public:
@@ -308,14 +314,34 @@ protected:
         unordered_map<string, vector<vector<string>>>& mappedSourceFilesToDeps,
         const bool pch,
         //const bool verbose, // TODO: fetch maxPchThreads from and optional command line arguments
-        const unsigned int maxPchThreads // = thread::hardware_concurrency() // controls PCH build parallelism, 0=auto, 1=sequential, N=limit to N
+        const unsigned int maxPchThreads, // = thread::hardware_concurrency() // controls PCH build parallelism, 0=auto, 1=sequential, N=limit to N
+        bool throwsIfRecursion
     ) {
 
-        if (in_array(sourceFile, visitedSourceFiles)) {
+        // if (in_array(sourceFile, visitedSourceFiles)) {
+        if (array_key_exists(sourceFile, mappedSourceFilesToDeps)) {
+            visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
             return mappedSourceFilesToDeps[sourceFile];
         }
-        visitedSourceFiles.push_back(sourceFile);
+        // visitedSourceFiles.push_back(sourceFile);
+        // mappedSourceFilesToDeps[sourceFile] = {{}, {}, {}};
 
+        if (in_array(sourceFile, visitedSourceFiles)) {
+            runtime_error err = ERROR("Recursion? " + F(F_FILE, sourceFile) + "\nVisited path:\n" + implode("\n", visitedSourceFiles));
+            if (throwsIfRecursion)
+                throw err;
+            else {
+                LOG(err.what());
+                visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
+                if (array_key_exists(sourceFile, mappedSourceFilesToDeps))
+                    return mappedSourceFilesToDeps[sourceFile];
+                else {
+                    LOG(ERROR("No mapped dependency for: " + F(F_FILE, sourceFile)).what());
+                    return {};
+                }
+            }
+        }
+        visitedSourceFiles.push_back(sourceFile);
 
         lastfmtime = max(lastfmtime, filemtime_ms(sourceFile));
         // waitFutures(pchBuilderFutures);
@@ -326,7 +352,8 @@ protected:
             if (verbose) LOG("Load dependencies from cache for " + F(F_FILE, sourceFile));
             string cache = file_get_contents(cacheFile);
             if (cache.empty()) {
-                mappedSourceFilesToDeps[sourceFile] = {};
+                visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
+                mappedSourceFilesToDeps[sourceFile] = {{}, {}, {}};
                 return mappedSourceFilesToDeps[sourceFile];
             }
 
@@ -363,18 +390,17 @@ protected:
                 unlink(cacheFile);
                 if (file_exists(cacheFile))
                     throw ERROR("Unable to delete: " + F(F_FILE, cacheFile));
-                array_remove(visitedSourceFiles, sourceFile);
+                // visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
                 mappedSourceFilesToDeps.erase(sourceFile);
                 if (verbose) LOG("Dependency cache invalidated, source file need to revisit...");
             } else {
                 lastfmtime = max(lastfmtime, local_max);
+                visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
                 mappedSourceFilesToDeps[sourceFile] = { includes, implementations, dependencies };
                 return mappedSourceFilesToDeps[sourceFile];
             }
         }
-        if (sourceFile == "/mnt/windows/cpp/tb/libs/nlohmann/json/master/single_include/nlohmann/json.hpp") {
-            DBG("o ooo..q");
-        }
+        
         if (verbose) LOG("Collecting dependencies for " + F(F_FILE, sourceFile));
         
 
@@ -385,7 +411,7 @@ protected:
         //     throw ERROR("Source file already visited (possible include recursion?): " + F(F_FILE, sourceFile) + " - Note: In case you changed the #include dependencies cleanup your build folder.");
         // else // TODO throw ERROR ^^^^ Only if --no-pch
             
-        visitedSourceFiles.push_back(sourceFile);
+        // visitedSourceFiles.push_back(sourceFile);
 
         if (verbose) LOG("Searching includes in " + F(F_FILE, sourceFile));
 
@@ -414,9 +440,10 @@ protected:
                 }
                 if (regx_match(RGX_INCLUDE, sourceLine, &matches)) {
                     if (verbose) LOG("Include found: " + matches[0]);
+                    DependencyArgumentPlugins dependencyArgumentPlugins = getDependenciesArgumentPlugins(foundDependencies);
                     const vector<string> foundIncludes = lookupFileInIncludeDirs(
                         get_path(sourceFile), matches[1], 
-                        includeDirs, true, true
+                        array_merge(includeDirs, dependencyArgumentPlugins.dependencyIncs), false, true
                     );
                     if (foundIncludes.empty())
                         throw ERROR("Include file not found: " + matches[0] 
@@ -463,7 +490,7 @@ protected:
                             // Build command for PCH using the wrapper (no #pragma once → no warning)
                             string pchArgs =
                                 " " + implode(" ", flags) + " " +
-                                FLAG_INCLDIR + implode(" " + FLAG_INCLDIR, includeDirs) + " " +
+                                FLAG_INCLDIR + implode(" " + FLAG_INCLDIR, array_merge(includeDirs, dependencyArgumentPlugins.dependencyIncs)) + " " +
                                 "-x c++-header " + // TODO: once it's added to gcc use this instead wrapper files: -Wno-pragma-once-outside-header " +
                                 wrapperFile + " " +
                                 FLAG_OUTPUT + " " + pchFile;
@@ -502,24 +529,31 @@ protected:
                             mappedSourceFilesToDeps,
                             pch,
                             //verbose,
-                            maxPchThreads
+                            maxPchThreads,
+                            throwsIfRecursion
                         );
+                    if (cache.empty())
+                        break;
+                        
                     includes = array_merge(includes, cache[0]);
                     implementations = array_merge(implementations, cache[1]);
                     dependencies = array_merge(dependencies, cache[2]);
 
                     // look up for implementations...
-                    implementations = lookupFileInIncludeDirs(
-                        get_path(sourceFile), matches[1], 
-                        includeDirs, true, false, EXTS_C_CPP
-                    );
-                    if (verbose) {
-                        for (const string& implementation: implementations)
-                            LOG("Implementation found: " + F(F_FILE, implementation));
-                    }
+                    // if (verbose) {
+                    //     for (const string& implementation: implementations)
+                    //         LOG("Implementation found: " + F(F_FILE, implementation));
+                    // }
                     foundImplementations = array_merge(
                         foundImplementations,
-                        implementations
+                        lookupFileInIncludeDirs(
+                            get_path(sourceFile), 
+                            matches[1], 
+                            array_merge(includeDirs, dependencyArgumentPlugins.dependencyIncs), 
+                            false, 
+                            false, 
+                            EXTS_C_CPP
+                        )
                     );
 
                     foundDependencies = array_merge(
@@ -558,8 +592,51 @@ protected:
         );
         runBuildCommands(buildCommands, maxPchThreads);
         // waitFutures(pchBuilderFutures);
+        visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
         mappedSourceFilesToDeps[sourceFile] = { includes, implementations, dependencies };
         return mappedSourceFilesToDeps[sourceFile];
+    }
+
+    DependencyArgumentPlugins getDependenciesArgumentPlugins(const vector<string>& dependencies) {
+        DependencyArgumentPlugins dependencyArgumentPlugins;
+        // vector<string> dependencyFlags;
+        // vector<string> dependencyLibs;
+        // vector<string> dependencyIncs;
+        for (const string& dependency: dependencies) {
+            // string
+            //     creator = DEFAULT_DEPENDENCY_CREATOR,
+            //     library = DEFAULT_DEPENDENCY_LIBRARY,
+            //     version = DEFAULT_DEPENDENCY_VERSION;
+            // const vector<string> splits =
+            //     explode(SEP_DEPENDENCY_VERSION, dependency);
+            // vector<string> splits0 =
+            //     explode(SEP_DEPENDENCY_LIBRARY, splits[0]);
+            // if (splits0.size() == 2) creator = array_shift(splits0);
+            // library = splits0[0];
+            // if (splits.size() == 2) version = splits[1];
+            // if (creator == DEFAULT_DEPENDENCY_CREATOR) creator = library;
+            // if (library == DEFAULT_DEPENDENCY_LIBRARY)
+            //     throw ERROR("Unnamed library in dependency: " + dependency);
+            // const string libClassName = ucfirst(library) + "Dependency";
+            // const string libPathName = get_absolute_path (
+            //     /*__DIR__ + "/" +*/ DIR_DEPENDENCIES + "/"
+            //     + creator + "/" + library + "/" + libClassName
+            // );
+            // if (verbose) {
+            //     lock_guard<mutex> outputLock(outputMutex);
+            //     LOG("Loading dependency: " + F(F_HIGHLIGHT, libClassName) + " from " + F(F_FILE, libPathName));
+            // }
+            // {
+            //     lock_guard<mutex> loaderLock(loaderMutex);
+                // Dependency* dependency = loader.load<Dependency>(libPathName);
+                // dependency->install(version);
+                Dependency* deptr = loadDependency(dependency);
+                dependencyArgumentPlugins.dependencyFlags = array_merge(dependencyArgumentPlugins.dependencyFlags, deptr->flags());
+                dependencyArgumentPlugins.dependencyLibs = array_merge(dependencyArgumentPlugins.dependencyLibs, deptr->libs());
+                dependencyArgumentPlugins.dependencyIncs = array_merge(dependencyArgumentPlugins.dependencyIncs, deptr->incs());
+            // }
+        }
+        return dependencyArgumentPlugins;
     }
 
     void runBuildCommands(const vector<string>& buildCommands, unsigned int maxPchThreads) {
@@ -615,14 +692,16 @@ protected:
         bool throwsIfNotFound,
         vector<string> extensions = {}
     ) const {
+        bool stop = false;
         vector<string> results;
         if (extensions.empty()) { 
             string extension = get_extension_only(include);
             extensions = extension.empty() ? EXTS_H_HPP : vector({ extension });
         }
         for (const string& extension: extensions) {
+            if (stop) break;
             string includePath = replace_extension(
-                get_absolute_path(fix_path(basePath + "/" + include)), 
+                get_absolute_path(fix_path(basePath + "/" + include), false), 
                 extension
             );
             if (file_exists(includePath)) {
@@ -631,20 +710,23 @@ protected:
                 continue;
             }
             for (const string& includeDir: includeDirs) {
+                if (stop) break;
                 includePath = 
-                    get_absolute_path(fix_path(trim(includeDir) + "/" + fix_path(basePath + "/" + include)), false);
+                    get_absolute_path(fix_path(trim(includeDir) + "/" + include), false);
                 if (file_exists(includePath)) {
                     results.push_back(includePath);
-                    if (stopAtFirstFound) break;
+                    if (stopAtFirstFound) {
+                        stop = true;
+                        break;
+                    }
                     continue;
                 }
             }
-            if (throwsIfNotFound && results.empty())
-                throw ERROR("Include not found: " + include);
         }
-        if (verbose && !results.empty()) {
+        if (throwsIfNotFound && results.empty())
+            throw ERROR("Include not found: " + include);
+        if (verbose && !results.empty())
             LOG("Source code(s) found.");
-        }
         return results;
     }
 

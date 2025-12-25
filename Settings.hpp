@@ -65,7 +65,7 @@ public:
 
     template<typename T>
     T get(const pair<string, string>& keys) {
-        if constexpr (!is_container<T>::value) if (args && args->has(keys)) return args->get<T>(keys);
+        if constexpr (!is_container<T>::value) if (args && args->has(keys)) return args->getByKey<T>(keys);
         if (!exts.empty() && exts.has(keys.first)) return exts.get<T>(keys.first);
         if (conf && conf->has(keys.first)) return conf->get<T>(keys.first);
         throw ERROR("Settings is missing for '" + keys.first + "' (or '" + keys.second + "')");
@@ -73,7 +73,7 @@ public:
 
     template<typename T>
     T get(const pair<string, string>& keys, const T defval) {
-        if constexpr (!is_container<T>::value) if (args && args->has(keys)) return args->get<T>(keys);
+        if constexpr (!is_container<T>::value) if (args && args->has(keys)) return args->getByKey<T>(keys);
         if (!exts.empty() && exts.has(keys.first)) return exts.get<T>(keys.first);
         if (conf && conf->has(keys.first)) return conf->get<T>(keys.first);
         return defval;

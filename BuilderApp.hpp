@@ -279,9 +279,10 @@ protected:
         // TODO: add parallel flag to command-line arguments
         // const bool parallel = true; // TODO: add it to the command line arguments, default to sequential for now?
         unsigned int numThreads = 0;
+        bool throwsIfRecursion = true;
         const vector<string> builtOutputFiles = buildCppFiles(allOutputFiles,
             buildPath, cppFiles, modes, flags, includeDirs, libs,
-            outputExtension, strict, pch, numThreads//, verbose
+            outputExtension, strict, pch, numThreads, throwsIfRecursion//, verbose
         );
         
         for (const string& builtOutputFile: builtOutputFiles) 
@@ -344,7 +345,8 @@ protected:
         // bool parallel,
         bool strict,
         bool pch,
-        unsigned int numThreads // 0 = auto; 1 = no parallel; 2+ = threads num 
+        unsigned int numThreads, // 0 = auto; 1 = no parallel; 2+ = threads num 
+        bool throwsIfRecursion
         // bool verbose
     ) {
         // Always use thread pool, set size to 1 when parallel=false
@@ -396,59 +398,34 @@ protected:
                             flags, includeDirs, foundImplementations, foundDependencies, visitedSourceFiles, 
                             mappedSourceFilesToDeps,
                             pch, //verbose, 
-                            numThreads
+                            numThreads,
+                            throwsIfRecursion
                         );
                     vector<string> includes = cache[0];
                     vector_remove(foundImplementations, cppFile);
                     foundImplementations = array_unique(foundImplementations);
 
                     vector<string> dependencies = array_merge(cache[2], foundDependencies);
-                    vector<string> dependencyFlags;
-                    vector<string> dependencyLibs;
-                    vector<string> dependencyIncs;
-                    for (const string& dependency: dependencies) {
-                        // string
-                        //     creator = DEFAULT_DEPENDENCY_CREATOR,
-                        //     library = DEFAULT_DEPENDENCY_LIBRARY,
-                        //     version = DEFAULT_DEPENDENCY_VERSION;
-                        // const vector<string> splits =
-                        //     explode(SEP_DEPENDENCY_VERSION, dependency);
-                        // vector<string> splits0 =
-                        //     explode(SEP_DEPENDENCY_LIBRARY, splits[0]);
-                        // if (splits0.size() == 2) creator = array_shift(splits0);
-                        // library = splits0[0];
-                        // if (splits.size() == 2) version = splits[1];
-                        // if (creator == DEFAULT_DEPENDENCY_CREATOR) creator = library;
-                        // if (library == DEFAULT_DEPENDENCY_LIBRARY)
-                        //     throw ERROR("Unnamed library in dependency: " + dependency);
-                        // const string libClassName = ucfirst(library) + "Dependency";
-                        // const string libPathName = get_absolute_path (
-                        //     /*__DIR__ + "/" +*/ DIR_DEPENDENCIES + "/"
-                        //     + creator + "/" + library + "/" + libClassName
-                        // );
-                        // if (verbose) {
-                        //     lock_guard<mutex> outputLock(outputMutex);
-                        //     LOG("Loading dependency: " + F(F_HIGHLIGHT, libClassName) + " from " + F(F_FILE, libPathName));
-                        // }
-                        {
-                            lock_guard<mutex> loaderLock(loaderMutex);
-                            // Dependency* dependency = loader.load<Dependency>(libPathName);
-                            // dependency->install(version);
-                            Dependency* deptr = loadDependency(dependency);
-                            dependencyFlags = array_merge(dependencyFlags, deptr->flags());
-                            dependencyLibs = array_merge(dependencyLibs, deptr->libs());
-                            dependencyIncs = array_merge(dependencyIncs, deptr->incs());
-                        }
-                    }
+                    
+                    DependencyArgumentPlugins dependencyArgumentPlugins = getDependenciesArgumentPlugins(dependencies);
+                    
 
                     vector<string> linkObjectFiles;
                     // Recursive call with parallel=false to avoid nested parallelism
                     vector<string> allflags = array_merge({ FLAG_COMPILE }, flags);
                     vector<string> builtObjectFiles = buildCppFiles(
                         linkObjectFiles, // allOutputFiles parameter
-                        buildPath, foundImplementations, modes,
-                        allflags, includeDirs, libs,
-                        EXT_O, false, strict, pch//, verbose
+                        buildPath, 
+                        foundImplementations, 
+                        modes,
+                        allflags, 
+                        includeDirs, 
+                        libs,
+                        EXT_O, 
+                        strict, 
+                        pch, 
+                        numThreads, 
+                        throwsIfRecursion//, verbose
                     );
 
                     bool built = false;
@@ -457,10 +434,10 @@ protected:
                     ) {
                         this->buildSourceFile(
                             cppFile, outputFile, 
-                            array_merge(flags, dependencyFlags), 
-                            array_merge(includeDirs, dependencyIncs),
+                            array_merge(flags, dependencyArgumentPlugins.dependencyFlags), 
+                            array_merge(includeDirs, dependencyArgumentPlugins.dependencyIncs),
                             linkObjectFiles,
-                            array_merge(libs, dependencyLibs),
+                            array_merge(libs, dependencyArgumentPlugins.dependencyLibs),
                             strict, verbose
                         );
                         built = true;
