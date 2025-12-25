@@ -381,19 +381,21 @@ protected:
             
             time_ms local_max = filemtime_ms(sourceFile);
             for (const string& include: includes)
-                local_max = max(local_max, filemtime_ms(include));                
+                if (!file_exists(include)) unlink(cacheFile); // cache invalidated (include file renamed or removed)
+                else local_max = max(local_max, filemtime_ms(include));                
 
             // TODO: ??? build may not need to depend on implementations - but I keep it for now in case if some crazy one includes the .cpp directly...
             for (const string& implementation: implementations)
-                local_max = max(local_max, filemtime_ms(implementation));
+                if (!file_exists(implementation)) unlink(cacheFile); // cache invalidated (included .cpp file renamed or removed)
+                else local_max = max(local_max, filemtime_ms(implementation));
 
-            if (filemtime_ms(cacheFile) < local_max) {
-                unlink(cacheFile);
+            if (!file_exists(cacheFile) || filemtime_ms(cacheFile) < local_max) {
+                if (file_exists(cacheFile)) unlink(cacheFile); // cache invalidated: source file changed
                 if (file_exists(cacheFile))
                     throw ERROR("Unable to delete: " + F(F_FILE, cacheFile));
                 // visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
                 mappedSourceFilesToDeps.erase(sourceFile);
-                if (verbose) LOG("Dependency cache invalidated, source file need to revisit...");
+                if (verbose) LOG("Dependency cache invalidated, source file needs to revisit...");
             } else {
                 lastfmtime = max(lastfmtime, local_max);
                 visitedSourceFiles = array_remove(visitedSourceFiles, sourceFile);
