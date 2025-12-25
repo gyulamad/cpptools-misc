@@ -9,7 +9,6 @@
 #include "../array_remove.hpp"  // Include the real implementation
 #include <vector>
 #include <string>
-#include <cassert>
 
 using namespace std;
 
