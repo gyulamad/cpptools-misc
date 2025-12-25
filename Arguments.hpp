@@ -195,13 +195,13 @@ public:
         string output = "Usages:\n" + args[0];
         for (size_t i = 0; i < helps.at.size(); i++)
             output += " <" + helps.at[i].first + ">";
-        if (!helps.key.empty()) output += " <options>\n";
+        if (!helps.key.empty()) output += " <options>\n\n";
         for (size_t i = 0; i < helps.at.size(); i++)
             output += helps.at[i].first + ": " + helps.at[i].second + "\n";
         if (!helps.key.empty()) output += "options:\n";
         for (const auto& [key, description] : helps.key) {
-            output += prefix + key.first 
-                + ", " + prefix_short + key.second + ": " 
+            output += "\n" + prefix + key.first 
+                + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
                 + description + "\n";
         }
         return output;
@@ -210,7 +210,7 @@ public:
 protected:
     void checkHelp(const string& key, const string& prefix) const {
         if (!hasHelp(key))
-            throw ERROR("Help is not provoded for argument '" + prefix + key + "'");
+            throw ERROR("Help is not provided for argument '" + prefix + key + "'");
     }
 
     ShorthandGenerator shorthand_gen;

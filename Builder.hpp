@@ -54,7 +54,7 @@ BUILDER_DEFAULT_MODES =
 const bool 
 BUILDER_DEFAULT_VERBOSE = 
 #ifdef BUILDER_VERBOSE
-    true
+    BUILDER_VERBOSE
 #else
     false
 #endif
@@ -496,7 +496,7 @@ protected:
                                 FLAG_OUTPUT + " " + pchFile;
 
                             buildCommands.push_back(GXX + pchArgs);
-                            DBG("collected: " + GXX + pchArgs);
+                            // DBG("collected: " + GXX + pchArgs);
                             // if (pchBuilderFutures.size() >= maxPchThreads) waitFutures(pchBuilderFutures);
                             // pchBuilderFutures.push_back(async(launch::async, [this, wrapperFile, pchArgs, /*verbose,*/ &lastfmtime, pchFile]() {
                             //     buildCmd(GXX + pchArgs, verbose);
@@ -744,7 +744,8 @@ protected:
         modes = array_unique(modes);
         sort(modes);
 
-        if (verbose) LOG("Attempt to load shared library: " + F(F_FILE, path) + " (modes: " + (!modes.empty() ? implode(",", modes) : "<none>") + ")");
+        if (verbose)
+            LOG("Attempt to load shared library: " + F(F_FILE, path) + " (modes: " + (!modes.empty() ? implode(",", modes) : "<none>") + ")");
             
         const string buildPath = getBuildFolder(
             DIR_BUILD_PATH, // TODO: to parameter
