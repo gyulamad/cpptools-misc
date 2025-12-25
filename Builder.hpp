@@ -249,13 +249,14 @@ protected:
         //     file_copy(outputFile, get_path(sourceFile), true);
     }
 
-    void buildCmd(const string& command, bool show = false) const {
+    void buildCmd(const string& command, bool verbose = false) const {
+        const bool showcmds = true; // TODO: bubble up
         string outputs, errors;
-        if (show) cout << command << endl;
+        if (verbose || showcmds) cout << command << endl;
         int err = Executor::execute(command, &outputs, &errors, false);
-        // if (show || err) cout << command << endl;
-        if (show && !outputs.empty()) cout << outputs << endl;
-        if ((show || err) && !errors.empty()) cerr << highlight_compiler_outputs(errors) << endl;
+        // if (verbose || err) cout << command << endl;
+        if ((verbose || showcmds) && !outputs.empty()) cout << outputs << endl;
+        if ((verbose || showcmds || err) && !errors.empty()) cerr << highlight_compiler_outputs(errors) << endl;
         if (err)
             throw ERROR("Compile failed: " + to_string(err));
     }
@@ -661,7 +662,7 @@ protected:
         const string& buildPath
     ) const {
         return getCachePath(headerFile, buildPath, DIR_PCH_FOLDER, EXT_GCH);
-        // // Mirrors header path into .build-<modes>/pch/ structure
+        // // Mirrors header path into .build/<modes>/pch/ structure
         // string relative = str_replace(DIR_BASE_PATH + "/", "", get_absolute_path(headerFile));
         // return fix_path(buildPath + "/" + DIR_PCH_FOLDER + "/" + relative + EXT_GCH);
     }
@@ -672,14 +673,14 @@ protected:
         const string& cachePath,
         const string& ext
     ) const {
-        // Mirrors header path into .build-<modes>/xyz/ structure
+        // Mirrors header path into .build/<modes>/xyz/ structure
         string relative = str_replace(DIR_BASE_PATH + "/", "", get_absolute_path(inputFile));
         return fix_path(buildPath + "/" + cachePath + "/" + relative + ext);
     
     }
 
     string getPchWrapperPath(const string& headerFile, const string& buildPath) const {
-        // e.g. .build-debug/pch/core/utils.hpp.wrapper.hpp
+        // e.g. .build/debug/pch/core/utils.hpp.wrapper.hpp
         string relative = str_replace(DIR_BASE_PATH + "/", "", get_absolute_path(headerFile));
         return fix_path(buildPath + "/" + DIR_PCH_FOLDER + "/" + relative + ".wrapper.hpp");
     }
@@ -803,7 +804,7 @@ protected:
         const string& sep
     ) const {
         return fix_path(
-            buildPath + (!modes.empty() ? sep + implode(sep, modes) : "")
+            buildPath + (!modes.empty() ? "/" + implode(sep, modes) : "")
         );
     }
 
