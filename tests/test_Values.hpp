@@ -38,7 +38,8 @@ TEST(test_Values_getValueByName_invalid_name_expected_to_throw) {
     try {
         values.getValueByName("non_existent");
     } catch (const exception& e) {
-        assert(str_contains(e.what(), "Value not found") && "Exception should contain 'Value not found'");
+        string what = e.what();
+        assert(str_contains(what, "Value is not found") && "Exception should contain 'Value not found'");
         threw = true;
     }
     assert(threw && "getByName should throw for invalid name");

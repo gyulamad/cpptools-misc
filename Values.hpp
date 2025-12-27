@@ -1,5 +1,7 @@
 #pragma once
 
+// for usages see Values.md
+
 #include <stdint.h>
 #include "Value.hpp"
 #include "Loadable.hpp"
@@ -119,7 +121,7 @@ public:
             if (values[i].getNameCRef() == name) {
                 return values[i] = value;
             }
-        throw ERROR("Not found: " + EMPTY_OR(name));
+        throw getValueNotFoundError(name);
     }
 
     template<typename T>
@@ -127,7 +129,7 @@ public:
         size_t size = values.size();
         for (size_t i = 0; i < size; i++)
             if (values[i].getNameCRef() == name) return values[i];
-        throw ERROR("Not found: " + EMPTY_OR(name));
+        throw getValueNotFoundError(name);
     }
     
     // ValueT<real>& operator[](size_t index) {
@@ -151,7 +153,7 @@ public:
     ValueT<real>& getValueByName(const string& name) {
         for (ValueT<real>& value: values)
             if (value.getNameCRef() == name) return value;
-        throw ERROR("Value not found");
+        throw getValueNotFoundError(name);
     }
     
     size_t getIndexByName(const string& name, bool create = true) {
@@ -162,7 +164,7 @@ public:
             values.push_back(ValueT<real>(name, .0f));
             return values.size() - 1;
         }
-        throw ERROR("Value not found");
+        throw getValueNotFoundError(name);
     }
     
     vector<real> getVariables() const {
@@ -230,18 +232,35 @@ private:
 
         values.clear();
         for (const string& section: inifile.sections()) {
-            if (section.empty())
-                // ... (globals in the ini file are not a part of a ValueT)
-                continue;
+            try {
+                if (section.empty())
+                    // ... (globals in the ini file are not a part of a ValueT)
+                    continue;
 
-            string valueStr = sectionKey + ksep + section;
-            for (const auto& [key, value]: inifile.list<string>(section))
-                valueStr += vsep + key + ksep + value;
-            
-            ValueT<real> value;
-            value.fromString(valueStr, ksep, vsep);
-            values.push_back(value);
+                string valueStr = sectionKey + ksep + section;
+                for (const auto& [key, value]: inifile.list<string>(section))
+                    valueStr += vsep + key + ksep + value;
+                
+                ValueT<real> value;
+                value.fromString(valueStr, ksep, vsep);
+                values.push_back(value);
+            }
+            catch (exception& e) {
+                throw ERROR(
+                    "Unable to convert values from .ini file: " 
+                    + F(F_FILE, inifile.getFilenameCRef()) 
+                    + " at section [" + F(F_DEBUG, section) + "]" 
+                    + EWHAT
+                );
+            }
         }
+    }
+
+    runtime_error getValueNotFoundError(const string& name) const {
+        return ERROR(
+            "Value is not found with name: [" + EMPTY_OR(name) + "]"
+            " in file " + F(F_FILE, getIniFileCRef().getFilenameCRef())
+        );
     }
 };
 

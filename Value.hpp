@@ -131,8 +131,11 @@ public:
     // Assignment operator
 
     inline ValueT& operator=(const ValueT& other) {
-        if (constant)
-            throw ERROR(ERR_ASSIGN_TO_CONSTANT);
+        if (constant) {
+            // TODO: throw ERROR(ERR_ASSIGN_TO_CONSTANT);
+            // fix();
+            return *this;
+        }
         name = other.name;
         value = other.value;
         lower = other.lower;
@@ -245,7 +248,8 @@ public:
             else if (key == "rounded") rounded = parse<bool>(val);
             else if (key == "clips") clips = parse<bool>(val);
             else if (key == "throws") throws = parse<bool>(val);
-            else throw ERROR(ERR_PARSE_KEY + EMPTY_OR(line));
+            else
+                throw ERROR(ERR_PARSE_KEY + EMPTY_OR(line));
         }
     }
 

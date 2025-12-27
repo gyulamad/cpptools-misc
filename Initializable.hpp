@@ -10,6 +10,7 @@ public:
             onLoad(); 
         };
     }
+
     virtual ~Initializable() {}
     
     virtual void init(const string& inifname, bool createIfNotExists, bool throwsIfNotExists) {

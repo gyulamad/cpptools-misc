@@ -252,11 +252,11 @@ protected:
     void buildCmd(const string& command, bool verbose = false) const {
         const bool showcmds = true; // TODO: bubble up
         string outputs, errors;
-        if (verbose || showcmds) cout << command << endl;
+        if (verbose || showcmds) cout << command + "\n";
         int err = Executor::execute(command, &outputs, &errors, false);
-        // if (verbose || err) cout << command << endl;
-        if ((verbose || showcmds) && !outputs.empty()) cout << outputs << endl;
-        if ((verbose || showcmds || err) && !errors.empty()) cerr << highlight_compiler_outputs(errors) << endl;
+        // if (verbose || showcmds || err) cout << command + "\n";
+        if ((verbose || showcmds) && !outputs.empty()) cout << outputs + "\n";
+        if ((verbose || showcmds || err) && !errors.empty()) cerr << highlight_compiler_outputs(errors) + "\n";
         if (err)
             throw ERROR("Compile failed: " + to_string(err));
     }
