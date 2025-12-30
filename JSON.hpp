@@ -1,16 +1,8 @@
 #pragma once
 
-// DEPENDENCY: nlohmann/json
+// DEPENDENCY: nlohmann/json:v3.12.0
+#include <json.hpp>
 
-// TODO: Use builder DEPENDENCY comment stuff for this
-// # ---- ADDING DEPENDENCIES ----
-// echo "Adding dependencies..."
-//
-// # nlohmann/json
-// git clone https://github.com/nlohmann/json libs/nlohmann/json
-//
-// # ----------------------------
-#include "../../libs/nlohmann/json/master/single_include/nlohmann/json.hpp"
 #include "explode.hpp"
 #include "implode.hpp"
 #include "str_diffs_show.hpp"

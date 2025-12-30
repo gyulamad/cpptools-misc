@@ -1,3 +1,5 @@
+// DEPENDENCY: nlohmann/json:v3.12.0
+
 #include "../TEST.hpp"
 #include "../ConsoleLogger.hpp"
 
