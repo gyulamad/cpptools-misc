@@ -8,6 +8,8 @@
 #include "EMPTY_OR.hpp"
 #include "ERROR.hpp"
 #include "parse.hpp"
+#include "str_replace.hpp"
+#include "Logger.hpp"
 
 using namespace std;
 
@@ -20,10 +22,16 @@ public:
         return array_keys(data);
     }
 
+    IniData& operator=(const IniData& other) {
+        if (this != &other) {
+            changed = data != other.data;
+            data = other.data;
+        }
+        return *this;
+    }
+
     void setData(const IniData& other) {
-        changed = data != other.data;
-        data = other.data;
-        // TODO: changed?
+        *this = other;
     }
 
     void clear() {
@@ -57,17 +65,28 @@ public:
         return typed;
     }
 
+    const string ERR_MISSING_KEY = "Key is not exists: {{key}} in section [{{section}}]";
+
     template<typename T>
     T get(const string& key, const string& section = "") const {
         if (!has(key, section)) 
-            throw ERROR("Key is not exists: " + EMPTY_OR(key) + " in section [" + EMPTY_OR(section, "<global>") + "]");
+            throw ERROR(str_replace({
+                { "{{key}}", { EMPTY_OR(key) } },
+                { "{{section}}", { EMPTY_OR(section, "<global>") } },
+            }, ERR_MISSING_KEY));
         return parse<T>(data.at(section).at(key));
     }
 
     template<typename T>
-    T getopt(const string& key, const T defval, const string& section = "") const {
-        if (!has(key, section)) 
+    T getopt(const string& key, const T defval, const string& section = "", bool warns = true) const {
+        if (!has(key, section)) {
+            if (warns)
+                LOG_WARN(str_replace({
+                    { "{{key}}", { EMPTY_OR(key) } },
+                    { "{{section}}", { EMPTY_OR(section, "<global>") } },
+                }, ERR_MISSING_KEY + ", using default value instead."));
             return defval;
+        }
         return parse<T>(data.at(section).at(key));
     }
 

@@ -26,12 +26,12 @@ public:
     VECTOR_WRAPPER(ValueT<real>, values)
 
     void onLoad() override {
-        LOG_DEBUG("ValuesT are loaded, converts..");
+        // LOG_DEBUG("ValuesT are loaded, converts..");
         convert();
     }
 
     void onReload() override {
-        LOG_DEBUG("ValuesT are reloaded, converts...");
+        // LOG_DEBUG("ValuesT are reloaded, converts...");
         convert();
     }
 
