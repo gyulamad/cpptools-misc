@@ -3,9 +3,11 @@
 #include "__DIR__.hpp"
 #include <vector>
 #include <string>
+#include "EXTERN.hpp"
 
 using namespace std;
 
+#define EXTERN_DEPENDENCY(clazz) EXTERN(clazz, (), ())
 
 class Dependency {
 public:

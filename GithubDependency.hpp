@@ -5,6 +5,8 @@
 #include "ConsoleLogger.hpp"
 #include "Executor.hpp"
 
+#define EXTERN_GITHUB_DEPENDENCY(clazz) EXTERN_DEPENDENCY(clazz)
+
 class GithubDependency: public Dependency {
 public:
     using Dependency::Dependency;

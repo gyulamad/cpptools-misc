@@ -2,6 +2,7 @@
 
 #include "../TEST.hpp"
 #include "../JSON.hpp"
+#include "../Value.hpp"
 
 #ifdef TEST
 
@@ -834,6 +835,18 @@ TEST(test_JSON_get_int) {
     JSON json("{\"key\": 42}");
     int actual = json.get<int>(".key");
     assert(actual == 42 && "Integer value should be retrieved correctly");
+}
+
+TEST(test_JSON_get_float) {
+    JSON json("{\"key\": 42.123}");
+    float actual = json.get<float>(".key");
+    assert(Value(actual) == Value(42.123) && "Float value should be retrieved correctly");
+}
+
+TEST(test_JSON_get_double) {
+    JSON json("{\"key\": 42.123}");
+    double actual = json.get<double>(".key");
+    assert(actual == 42.123 && "Double value should be retrieved correctly");
 }
 
 TEST(test_JSON_get_string) {

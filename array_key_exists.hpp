@@ -19,5 +19,6 @@ struct is_map_like<unordered_map<K, V>> : true_type {};
 template<typename Container, typename Key>
 typename enable_if<is_map_like<Container>::value, bool>::type
 array_key_exists(const Key& key, const Container& container) {
+    if (container.empty()) return false;
     return container.find(key) != container.end();
 }

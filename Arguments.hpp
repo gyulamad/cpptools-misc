@@ -124,7 +124,7 @@ public:
     // Get a boolean value at position
     bool getBool(size_t at) const {
         if (has(at)) 
-            throw ERROR("Missing argument at: " + to_string(at) + "\n" + help());
+            throw ERROR("Missing argument at: " + to_string(at) + "\n" + help(at));
         return parse<bool>(args[at]);
     }
 
@@ -141,7 +141,7 @@ public:
         checkHelp(key, prefix);
         long int idx = indexOf(key, prefix);
         if (idx == -1)
-            throw ERROR("Missing argument: " + key + "\n" + help());
+            throw ERROR("Missing argument: " + key + "\n" + help(key));
 
         string arg = args[idx];
         string prefixed_key = prefix + key + equal_to;
@@ -149,13 +149,13 @@ public:
             // Extract value after "="
             string value = arg.substr(prefixed_key.length());
             if (value.empty()) 
-                throw ERROR("Missing value for argument: " + key + "\n" + help());
+                throw ERROR("Missing value for argument: " + key + "\n" + help(key));
             return parse<T>(value);
         } else if (idx + 1 < (long int)(args.size()))
             // Value is in the next argument
             return parse<T>(args[idx + 1]);
         else
-            throw ERROR("Missing value for argument: " + key + "\n" + help());
+            throw ERROR("Missing value for argument: " + key + "\n" + help(key));
     }
     
     template<typename T>
@@ -163,7 +163,7 @@ public:
         if (has(keys.first, prefix)) return get<T>(keys.first, prefix);
         else if (has(keys.second, prefix_short)) return get<T>(keys.second, prefix_short);
         else 
-            throw ERROR("Missing argument: " + prefix + keys.first + " (or " + prefix_short + keys.second + ")" + "\n" + help());
+            throw ERROR("Missing argument: " + prefix + keys.first + " (or " + prefix_short + keys.second + ")" + "\n" + help(keys));
     }
 
     // Templated getter with default value for key-based lookup
@@ -181,7 +181,7 @@ public:
     template<typename T>
     T get(size_t at) const {
         if (!has(at)) 
-            throw ERROR("Missing argument at: " + to_string(at) + "\n" + help());
+            throw ERROR("Missing argument at: " + to_string(at) + "\n" + help(at));
         return parse<T>(args[at]);
     }
 
@@ -197,12 +197,34 @@ public:
             output += " <" + helps.at[i].first + ">";
         if (!helps.key.empty()) output += " <options>\n\n";
         for (size_t i = 0; i < helps.at.size(); i++)
-            output += helps.at[i].first + ": " + helps.at[i].second + "\n";
+            output += help(i) + "\n";
         if (!helps.key.empty()) output += "options:\n";
+        output += help("");
+        return output;
+    }
+
+    string help(size_t at) const {
+        return helps.at[at].first + ": " + helps.at[at].second;
+    }
+
+    string help(const string& k) const {
+        string output;
         for (const auto& [key, description] : helps.key) {
-            output += "\n" + prefix + key.first 
-                + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
-                + description + "\n";
+            if (k.empty() || key.first == k || key.second == k)
+                output += "\n" + prefix + key.first 
+                    + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
+                    + description + "\n";
+        }
+        return output;
+    }
+
+    string help(const Key& k) const {
+        string output;
+        for (const auto& [key, description] : helps.key) {
+            if (key.first == k.first || key.second == k.second)
+                output += "\n" + prefix + key.first 
+                    + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
+                    + description + "\n";
         }
         return output;
     }

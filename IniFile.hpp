@@ -35,7 +35,14 @@ public:
         }
     }
 
+    // IniFile(const IniFile& other): IniFile(other.getFilenameCRef(), false, false, true, false) {}
+
     virtual ~IniFile() {}
+
+    // IniFile& operator=(const IniFile& other) {
+    //     setData(other);
+    //     return *this;
+    // }
 
     function<void()> onLoad = nullptr;
     function<void()> onSave = nullptr;

@@ -21,9 +21,18 @@ class ValuesT: public Initializable {
 public:
     ValuesT(): Initializable() {}
 
+    ValuesT(const ValuesT<real>& other): Initializable(), values(other.values) {}
+
+    ValuesT<real>& operator=(const ValuesT<real>& other) {
+        values = other.values;
+        return *this;
+    }
+
     virtual ~ValuesT() {}
 
-    VECTOR_WRAPPER(ValueT<real>, values)
+    // VECTOR_WRAPPER(ValueT<real>, values)
+    size_t size() const { return values.size(); }
+
 
     void onLoad() override {
         // LOG_DEBUG("ValuesT are loaded, converts..");

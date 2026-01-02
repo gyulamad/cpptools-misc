@@ -18,20 +18,22 @@ public:
     IniData() {}
     virtual ~IniData() {}
 
-    vector<string> sections() const {
-        return array_keys(data);
-    }
+    // IniData& operator=(const IniData& other) {
+    //     setData(other);
+    //     return *this;
+    // }
 
-    IniData& operator=(const IniData& other) {
+    void setData(const IniData& other) {
         if (this != &other) {
             changed = data != other.data;
             data = other.data;
         }
-        return *this;
+        // return *this;
+        // *this = other;
     }
 
-    void setData(const IniData& other) {
-        *this = other;
+    vector<string> sections() const {
+        return array_keys(data);
     }
 
     void clear() {
