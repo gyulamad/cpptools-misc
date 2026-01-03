@@ -4,18 +4,54 @@
 #include "IniFile.hpp"
 
 class Initializable {
-public:
-    Initializable() {
+protected:
+    void construct() {
         inifile.onLoad = [this]() { 
             onLoad(); 
         };
     }
+public:
+    Initializable(
+        bool createIfNotExists,
+        bool throwsIfNotExists,
+        bool warnsIfNotExists,
+        bool verbose
+    ):
+        inifile(
+            createIfNotExists,
+            throwsIfNotExists,
+            warnsIfNotExists,
+            verbose
+        )
+    {
+        construct();
+    }
+
+    Initializable(
+        const string& inifname, 
+        bool load, // = false, 
+        bool createIfNotExists,
+        bool throwsIfNotExists,
+        bool warnsIfNotExists,
+        bool verbose
+    ):
+        inifile(
+            inifname,
+            load,
+            createIfNotExists,
+            throwsIfNotExists,
+            warnsIfNotExists,
+            verbose
+        )
+    {
+        construct();
+    }
 
     virtual ~Initializable() {}
     
-    virtual void init(const string& inifname, bool createIfNotExists, bool throwsIfNotExists) {
-        inifile.load(inifname, createIfNotExists, throwsIfNotExists);
-    }
+    // virtual void init(const string& inifname, bool createIfNotExists, bool throwsIfNotExists) {
+    //     inifile.load(inifname, createIfNotExists, throwsIfNotExists);
+    // }
 
     virtual void reset(const IniData* inidata = nullptr) {
         if (inidata) inifile.setData(*inidata);

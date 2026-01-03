@@ -14,25 +14,79 @@
 
 using namespace std;
 
-class IniFile: public IniData {
+class IniFile: public IniData {    
+protected:
+    void construct(
+        string filename, // = "", 
+        bool load, // = false, 
+        bool createIfNotExists, // = false, 
+        bool throwsIfNotExists, // = false,
+        bool warnsIfNotExists
+    ) {
+        if (!logger()) createLogger<ConsoleLogger>();
+        if (!filename.empty()) {
+            filename = get_absolute_path(filename, false);
+            if (load) this->load(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
+            else if (!setFilename(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists)) 
+                throw ERROR("Unknown ini file error: " + filename);
+        }
+    }
 public:
     IniFile(
-        string filename = "", 
-        bool load = false, 
-        bool createIfNotExists = false, 
-        bool throwsIfNotExists = false,
-        bool verbose = false
+        string filename, // = "", 
+        bool load, // = false, 
+        bool createIfNotExists, // = false, 
+        bool throwsIfNotExists, // = false,
+        bool warnsIfNotExists,
+        bool verbose // = false
     ): 
         IniData(),
         verbose(verbose)
     {
-        if (!logger()) createLogger<ConsoleLogger>();
-        if (!filename.empty()) {
-            filename = get_absolute_path(filename, false);
-            if (load) this->load(filename, createIfNotExists, throwsIfNotExists);
-            else if (!setFilename(filename, createIfNotExists, throwsIfNotExists)) 
-                throw ERROR("Unknown ini file error: " + filename);
-        }
+        construct(
+            filename, // = "", 
+            load, // = false, 
+            createIfNotExists, // = false, 
+            throwsIfNotExists, // = false,
+            warnsIfNotExists
+        );
+    }
+
+    IniFile(
+        bool load, // = false, 
+        bool createIfNotExists, // = false, 
+        bool throwsIfNotExists, // = false,
+        bool warnsIfNotExists,
+        bool verbose // = false
+    ):
+        IniData(),
+        verbose(verbose)
+    {
+        construct(
+            "", 
+            load, // = false, 
+            createIfNotExists, // = false, 
+            throwsIfNotExists, // = false,
+            warnsIfNotExists
+        );
+    }
+
+    IniFile(
+        bool createIfNotExists = false, // = false, 
+        bool throwsIfNotExists = false, // = false,
+        bool warnsIfNotExists = false,
+        bool verbose = false // = false
+    ):
+        IniData(),
+        verbose(verbose)
+    {
+        construct(
+            "", 
+            false, 
+            createIfNotExists, // = false, 
+            throwsIfNotExists, // = false,
+            warnsIfNotExists
+        );
     }
 
     // IniFile(const IniFile& other): IniFile(other.getFilenameCRef(), false, false, true, false) {}
@@ -50,8 +104,12 @@ public:
 
     const string& getFilenameCRef() const { return filename; }
 
-    void load(const string& filename = "", bool createIfNotExists = false, bool throwsIfNotExists = false) {
-        if (!setFilename(filename, createIfNotExists, throwsIfNotExists)) return;
+    void load(bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
+        load("", createIfNotExists, throwsIfNotExists, warnsIfNotExists);
+    }
+
+    void load(const string& filename, bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
+        if (!setFilename(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists)) return;
 
         string section = "";
         data.clear();
@@ -77,9 +135,13 @@ public:
         changed = false;
     }
 
-    void save(const string& filename = "", bool keepFilenameChanged = false, bool createIfNotExists = true) {
+    void save(bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
+        save("", false, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
+    }
+
+    void save(const string& filename, bool keepFilenameChanged, bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
         string _filename = this->filename;
-        bool saveAs = setFilename(filename, createIfNotExists);
+        bool saveAs = setFilename(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
 
         string contents;
         for (const auto& [section, values]: data) {
@@ -127,12 +189,8 @@ public:
         return IniData::getopt<T>(key, defval, section, warns);
     }
 
-protected:
-    string filename = "";
-    bool verbose = false;
-
     [[nodiscard]]
-    bool setFilename(string filename = "", bool createIfNotExists = false, bool throwsIfNotExists = false) {
+    bool setFilename(string filename, bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
         filename = filename.empty() ? "" : get_absolute_path(filename, false);
         bool changed = false;
 
@@ -148,13 +206,20 @@ protected:
             if (createIfNotExists) {
                 if (verbose) LOG("Create file: " + this->filename);
                 file_put_contents(this->filename, "; Autogenerated initialization file\n\n", false, true);
-            } else 
+            } else {
+                const string msg = "File not found: " + F(F_FILE, this->filename);
                 if (throwsIfNotExists)
-                    throw ERROR("File not found: " + F(F_FILE, this->filename));
+                    throw ERROR(msg);
+                else if (warnsIfNotExists)
+                    LOG_WARN(msg);
+            }
         }
 
         this->changed = this->changed || changed;
         return changed;
     }
 
+protected:
+    string filename = "";
+    bool verbose = false;
 };

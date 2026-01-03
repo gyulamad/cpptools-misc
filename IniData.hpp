@@ -101,6 +101,10 @@ public:
         }
     }
 
+    [[nodiscard]]
+    bool isChanged() const { return this->changed; }
+    void setChanged(bool changed) { this->changed = changed; }
+
 protected:
 
     unordered_map<

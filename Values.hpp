@@ -14,17 +14,61 @@
 #include "safe.hpp"
 #include "IniData.hpp"
 #include "Initializable.hpp"
-#include "VECTOR_WRAPPER.hpp"
+#include "vector_equal.hpp"
 
 template<typename real = float> // , typename S = uint32_t>
 class ValuesT: public Initializable {
 public:
-    ValuesT(): Initializable() {}
+    ValuesT(
+        bool createIfNotExists = false,
+        bool throwsIfNotExists = false,
+        bool warnsIfNotExists = false,
+        bool verbose = false
+    ):
+        Initializable(
+            createIfNotExists,
+            throwsIfNotExists,
+            warnsIfNotExists,
+            verbose
+        )
+    {}
 
-    ValuesT(const ValuesT<real>& other): Initializable(), values(other.values) {}
+    ValuesT(
+        const string& inifname, 
+        bool load, // = false, 
+        bool createIfNotExists,
+        bool throwsIfNotExists,
+        bool warnsIfNotExists,
+        bool verbose
+    ):
+        Initializable(
+            inifname,
+            load,
+            createIfNotExists,
+            throwsIfNotExists,
+            warnsIfNotExists,
+            verbose
+        )
+    {}
+
+    ValuesT(const ValuesT<real>& other, bool load = false, bool createIfNotExists = false, bool throwsIfNotExists = true, bool warnsIfNotExists = false, bool verbose = false): 
+        Initializable(other.inifile.getFilenameCRef(), load, createIfNotExists, throwsIfNotExists, warnsIfNotExists, verbose)
+    {
+        if (!vector_equal(values, other.values)) {
+            values = other.values;
+            inifile.setChanged(true);
+        }
+    }
 
     ValuesT<real>& operator=(const ValuesT<real>& other) {
-        values = other.values;
+        bool changed = other.inifile.isChanged();
+        if (!inifile.setFilename(other.inifile.getFilenameCRef(), false, false, false))
+            changed = true;
+        if (!vector_equal(values, other.values)) {
+            values = other.values;
+            changed = true;
+        }
+        inifile.setChanged(changed);
         return *this;
     }
 
