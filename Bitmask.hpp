@@ -1,7 +1,5 @@
 #pragma once
 
-using namespace std;
-
 // Bitmask class to manage configuration flags
 class Bitmask {
 private:
