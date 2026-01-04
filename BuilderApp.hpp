@@ -5,12 +5,16 @@
 #include "ConsoleLogger.hpp"
 #include "Arguments.hpp"
 #include "Stopper.hpp"
+#include "file_exists.hpp"
 #include "readdir.hpp"
 #include <thread>
 #include <queue>
 #include "vector_remove.hpp"
 #include "array_unique.hpp"
 #include "get_filename.hpp"
+#include "str_ends_with.hpp"
+#include "latest_file_time_in_folder.hpp"
+#include "get_absolute_path.hpp"
 
 // TODO: add parallel builds flag
 class BuilderApp: public Builder, public App<ConsoleLogger, Arguments> {
@@ -43,9 +47,9 @@ protected:
     // TODO 
     const Arguments::Key PRM_PARALLEL { "parallel", "p" };
     const Arguments::Key PRM_CLEAN = { "clean", "c" };
-    
-    // precompiled headers
-    const Arguments::Key PRM_NO_PCH = { "no-pch", "npch" };
+   
+    const Arguments::Key PRM_NO_PCH = { "no-pch", "npch" };  // precompiled headers
+    const Arguments::Key PRM_COMPRESS = { "compress", "cmprss" };  // zip builds
 
     // "mode" argument selected compile flags
     const vector<string> FLAGS = { "--std=c++20" };
@@ -136,6 +140,8 @@ protected:
             "Clean the project from all generated files and folders.");
         args.addHelpByKey(PRM_NO_PCH, // TODO
             "Turns off precompiled headers (optional argument)");
+        args.addHelpByKey(PRM_COMPRESS, // TODO
+            "Turns off built cache compression (optional argument)");
 
             
         Stopper stopper;
@@ -248,6 +254,8 @@ protected:
             // fullIncludeDirs.insert(fullIncludeDirs.begin(), pchIncludeDir);  
         }
 
+        const bool compress = args.has(PRM_COMPRESS); // TODO - Add .zip to clean up
+
         // ====== clean first if needed ======
 
         if (args.has(PRM_CLEAN)) {
@@ -263,6 +271,46 @@ protected:
             } else // If no input is given, clean the current working directory.
                 cleanProject(get_cwd(), verbose);
         }
+
+
+        // ====== manage compressions for built cache if needed ======
+
+        if (compress) // TODO: this one is incomplete and bugzzy - needs more tests and fix!
+        {
+            const string base = DIR_BUILD_FOLDER;
+            if (file_exists(base)) {
+                const string EXT_ZIP = ".zip"; //  TODO: to configs
+                vector<thread> threads;
+                const vector<string> fs = readdir(base, "", false, false);
+                for (const string& f: fs) {
+                    if (is_dir(f)) {
+                        const string zipf = f + EXT_ZIP;
+                        if (f != buildPath) {
+                            bool zipexists = file_exists(zipf);
+                            if (!zipexists || filemtime_ms(zipf) < latest_file_time_in_folder_ms(f)) {
+                                if (zipexists)
+                                    Executor::execute("rm " + zipf);
+                                threads.push_back(thread([zipf, f]() {
+                                    Executor::execute("zip -r " + zipf + " " + f);
+                                    Executor::execute("rm -rf " + f);
+                                }));
+                            }
+                        }
+                    } else if (str_ends_with(f, EXT_ZIP)) {
+                        const string zipf = f;
+                        const string fldr = get_absolute_path(remove_extension(zipf), false);
+                        if (buildPath == fldr && !file_exists(fldr)) {
+                            threads.push_back(thread([zipf]() {
+                                Executor::execute("unzip " + zipf); // TODO: this step is only necessary if unziping the builder is faster than recompiling everything (probably is but a banchmark never the less)
+                            }));
+                        }
+                    }
+                }
+                for (thread& t: threads)
+                    if (t.joinable()) t.join();
+            }
+        }
+
 
         // ====== compilation starts at this point ======
         if (cppFiles.empty()) // nothing to compile?
