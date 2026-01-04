@@ -124,7 +124,7 @@ TEST(test_IniFile_save_valid_data) {
         // Use set to populate
         ini.set("key1", "value1");
         ini.set("key2", 42);    
-        ini.save();
+        ini.save(true);
 
         // Read back the saved file
         ini_check.load(filename);

@@ -13,6 +13,8 @@
 
 using namespace std;
 
+using DataT = unordered_map<string, unordered_map<string, string>>;
+
 class IniData {
 public:
     IniData() {}
@@ -23,14 +25,18 @@ public:
     //     return *this;
     // }
 
-    void setData(const IniData& other) {
-        if (this != &other) {
-            changed = data != other.data;
-            data = other.data;
-        }
-        // return *this;
-        // *this = other;
-    }
+    // void setData(const IniData& other) {
+    //     if (this != &other) {
+    //         changed = data != other.data;
+    //         data = other.data;
+    //     }
+    //     // return *this;
+    //     // *this = other;
+    // }
+
+    void setData(const DataT& data) { this->data = data; }
+
+    const DataT& getDataCRef() const { return data; }
 
     vector<string> sections() const {
         return array_keys(data);
@@ -101,16 +107,9 @@ public:
         }
     }
 
-    [[nodiscard]]
-    bool isChanged() const { return this->changed; }
-    void setChanged(bool changed) { this->changed = changed; }
-
 protected:
 
-    unordered_map<
-        string, 
-        unordered_map<string, string>
-    > data;
+    DataT data;
     bool changed = false;
     
 private:

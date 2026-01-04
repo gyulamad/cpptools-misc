@@ -17,9 +17,9 @@ using namespace std;
 class IniFile: public IniData {    
 protected:
     void construct(
-        string filename, // = "", 
-        bool load, // = false, 
-        bool createIfNotExists, // = false, 
+        string filename, // = "",
+        bool load, // = false,
+        bool createIfNotExists, // = false,
         bool throwsIfNotExists, // = false,
         bool warnsIfNotExists
     ) {
@@ -27,18 +27,18 @@ protected:
         if (!filename.empty()) {
             filename = get_absolute_path(filename, false);
             if (load) this->load(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
-            else if (!setFilename(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists)) 
+            else if (!setFilename(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists))
                 throw ERROR("Unknown ini file error: " + filename);
         }
     }
 public:
     IniFile(
         string filename, // = "", 
-        bool load, // = false, 
-        bool createIfNotExists, // = false, 
-        bool throwsIfNotExists, // = false,
-        bool warnsIfNotExists,
-        bool verbose // = false
+        bool load = false, 
+        bool createIfNotExists = false,
+        bool throwsIfNotExists = false,
+        bool warnsIfNotExists = false,
+        bool verbose = false
     ): 
         IniData(),
         verbose(verbose)
@@ -53,29 +53,10 @@ public:
     }
 
     IniFile(
-        bool load, // = false, 
-        bool createIfNotExists, // = false, 
-        bool throwsIfNotExists, // = false,
-        bool warnsIfNotExists,
-        bool verbose // = false
-    ):
-        IniData(),
-        verbose(verbose)
-    {
-        construct(
-            "", 
-            load, // = false, 
-            createIfNotExists, // = false, 
-            throwsIfNotExists, // = false,
-            warnsIfNotExists
-        );
-    }
-
-    IniFile(
-        bool createIfNotExists = false, // = false, 
-        bool throwsIfNotExists = false, // = false,
+        bool createIfNotExists = false,
+        bool throwsIfNotExists = false,
         bool warnsIfNotExists = false,
-        bool verbose = false // = false
+        bool verbose = false
     ):
         IniData(),
         verbose(verbose)
@@ -89,14 +70,7 @@ public:
         );
     }
 
-    // IniFile(const IniFile& other): IniFile(other.getFilenameCRef(), false, false, true, false) {}
-
     virtual ~IniFile() {}
-
-    // IniFile& operator=(const IniFile& other) {
-    //     setData(other);
-    //     return *this;
-    // }
 
     function<void()> onLoad = nullptr;
     function<void()> onSave = nullptr;
@@ -104,11 +78,11 @@ public:
 
     const string& getFilenameCRef() const { return filename; }
 
-    void load(bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
-        load("", createIfNotExists, throwsIfNotExists, warnsIfNotExists);
+    void load(bool createIfNotExists = false, bool throwsIfNotExists = true, bool warnsIfNotExists = false) {
+        load(this->filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
     }
 
-    void load(const string& filename, bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
+    void load(const string& filename, bool createIfNotExists = false, bool throwsIfNotExists = true, bool warnsIfNotExists = false) {
         if (!setFilename(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists)) return;
 
         string section = "";
@@ -135,11 +109,11 @@ public:
         changed = false;
     }
 
-    void save(bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
-        save("", false, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
+    void save(bool createIfNotExists = false, bool throwsIfNotExists = true, bool warnsIfNotExists = false) {
+        save(this->filename, false, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
     }
 
-    void save(const string& filename, bool keepFilenameChanged, bool createIfNotExists, bool throwsIfNotExists, bool warnsIfNotExists) {
+    void save(const string& filename, bool keepFilenameChanged = true, bool createIfNotExists = false, bool throwsIfNotExists = true, bool warnsIfNotExists = false) {
         string _filename = this->filename;
         bool saveAs = setFilename(filename, createIfNotExists, throwsIfNotExists, warnsIfNotExists);
 

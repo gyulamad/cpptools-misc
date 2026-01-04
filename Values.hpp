@@ -54,21 +54,19 @@ public:
     ValuesT(const ValuesT<real>& other, bool load = false, bool createIfNotExists = false, bool throwsIfNotExists = true, bool warnsIfNotExists = false, bool verbose = false): 
         Initializable(other.inifile.getFilenameCRef(), load, createIfNotExists, throwsIfNotExists, warnsIfNotExists, verbose)
     {
-        if (!vector_equal(values, other.values)) {
-            values = other.values;
-            inifile.setChanged(true);
-        }
+        inifile.setData(other.inifile.getDataCRef());
+        convert();
+        // values = other.values;
     }
 
     ValuesT<real>& operator=(const ValuesT<real>& other) {
-        bool changed = other.inifile.isChanged();
-        if (!inifile.setFilename(other.inifile.getFilenameCRef(), false, false, false))
-            changed = true;
-        if (!vector_equal(values, other.values)) {
-            values = other.values;
-            changed = true;
-        }
-        inifile.setChanged(changed);
+        if (inifile.setFilename(other.inifile.getFilenameCRef(), false, false, false))
+            inifile.load(); // filename is differs so reload .ini (for constraits like bounds or constant etc...)
+
+        inifile.setData(other.inifile.getDataCRef());
+        convert();
+        // values = other.values;
+
         return *this;
     }
 
@@ -251,16 +249,16 @@ public:
         return bounds;
     }
 
-    IniData getAsIniData() const {
-        IniData iniData;
-        for (const ValueT<real>& value: values) {
-            string section = value.getNameCRef();
-            unordered_map<string, string> map = value.getAsUMapStr();
-            for (const auto& [key, val]: map)
-                iniData.set(key, val, section);
-        }
-        return iniData;
-    }
+    // IniData getAsIniData() const {
+    //     IniData iniData;
+    //     for (const ValueT<real>& value: values) {
+    //         string section = value.getNameCRef();
+    //         unordered_map<string, string> map = value.getAsUMapStr();
+    //         for (const auto& [key, val]: map)
+    //             iniData.set(key, val, section);
+    //     }
+    //     return iniData;
+    // }
     
     // size_t size() const { return values.size(); }
 

@@ -2,6 +2,23 @@
 
 #include "IniData.hpp"
 #include "IniFile.hpp"
+#include "../misc/EXTERN.hpp"
+
+#define EXTERN_INITIALIZABLE(clazz) EXTERN(clazz, ( \
+    const string& inifname, \
+    bool load, \
+    bool createIfNotExists, \
+    bool throwsIfNotExists, \
+    bool warnsIfNotExists, \
+    bool verbose \
+), ( \
+    inifname, \
+    load, \
+    createIfNotExists, \
+    throwsIfNotExists, \
+    warnsIfNotExists, \
+    verbose \
+))
 
 class Initializable {
 protected:
@@ -54,7 +71,7 @@ public:
     // }
 
     virtual void reset(const IniData* inidata = nullptr) {
-        if (inidata) inifile.setData(*inidata);
+        if (inidata) inifile.setData(inidata->getDataCRef());
         onReload();
     }    
 
