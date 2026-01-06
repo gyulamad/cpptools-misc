@@ -5,8 +5,6 @@
 
 #include "explode.hpp"
 #include "implode.hpp"
-#include "str_diffs_show.hpp"
-#include "str_contains.hpp"
 #include "ERROR.hpp"
 #include <string>
 #include <vector>
