@@ -4,6 +4,9 @@
 #include "array_key_exists.hpp"
 #include "parse.hpp"
 #include "str_starts_with.hpp"
+#include "Logger.hpp"
+#include "is_numeric.hpp"
+#include "trim.hpp"
 
 using namespace std;
 
@@ -31,6 +34,23 @@ public:
     }
 
     virtual ~Arguments() {}
+
+    // Use this after each "addHelp(...)" you added so that the helper can show every help
+    void addHelper(const string& key = "help", const string& description = "Shows Help") {
+        addHelp(key, description);
+        if (!has(key))
+            return;
+        const string& hlp = get<string>(key);
+        if (hlp.empty()) {
+            LOG(help());
+            return;
+        }
+        if (is_numeric(hlp)) {
+            LOG(help(parse<int>(hlp)));
+            return;
+        }
+        LOG(help(hlp));
+    }
 
     void addHelp(const size_t& at, const string& name, const string& description) {
         if (helps.at.size() <= at) helps.at.resize(at + 1);
@@ -144,8 +164,11 @@ public:
             throw ERROR("Missing argument: " + key + "\n" + help(key));
 
         string arg = args[idx];
-        string prefixed_key = prefix + key + equal_to;
-        if (str_starts_with(arg, prefixed_key)) {
+        string prefixed_key = prefix + key;
+        if (trim(arg) == prefixed_key) // is (boolean) flag?
+            return (T)"";
+        prefixed_key += equal_to;        
+        if (str_starts_with(arg, prefixed_key)) { // with '=' character
             // Extract value after "="
             string value = arg.substr(prefixed_key.length());
             if (value.empty()) 

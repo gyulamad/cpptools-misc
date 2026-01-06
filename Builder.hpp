@@ -19,7 +19,6 @@
 #include "array_merge.hpp"
 #include "get_path.hpp"
 #include "get_extension_only.hpp"
-#include "str_contains.hpp"
 #include "is_dir.hpp"
 #include "mkdir.hpp"
 #include "file_put_contents.hpp"
@@ -37,7 +36,6 @@
 #include "sort.hpp"
 #include "array_unique.hpp"
 #include "trim.hpp"
-#include "QUOTEME.hpp"
 #include "array_key_exists.hpp"
 
 using namespace std;

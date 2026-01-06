@@ -3,6 +3,7 @@
 #include "../TEST.hpp"
 #include "../ConsoleLogger.hpp"
 
+#ifdef TEST
 #include "test_Arguments.hpp"
 #include "test_array_dump.hpp"
 #include "test_array_key_exists.hpp"
@@ -35,6 +36,7 @@
 #include "test_get_time_sec.hpp"
 #include "test_implode.hpp"
 #include "test_in_array.hpp"
+#include "test_is_numeric.hpp"
 #include "test_is_valid_datetime.hpp"
 #include "test_JSON.hpp"
 #include "test_JSONExts.hpp"
@@ -80,6 +82,7 @@
 #include "test_capture_cout.hpp"
 #include "test_IniFile.hpp"
 #include "test_Sequence.hpp"
+#endif // TEST
 
 int main() {
     createLogger<ConsoleLogger>();
