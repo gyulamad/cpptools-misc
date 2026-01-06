@@ -134,8 +134,8 @@ private:
     Logger* logger = nullptr;
 };
 template<typename L> static Logger* createLogger() { return LoggerFactory::createLogger<L>(); }
-void logger(Logger* logger) { LoggerFactory::setLogger(logger); }
-Logger* logger() { return LoggerFactory::getLogger(); }
+inline void logger(Logger* logger) { LoggerFactory::setLogger(logger); }
+inline Logger* logger() { return LoggerFactory::getLogger(); }
 
 
 #define LOG_THROW(msg) SAFE(logger())->throws(std::string("") + msg, FILELN, true)

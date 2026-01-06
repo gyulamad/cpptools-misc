@@ -29,24 +29,8 @@ protected:
     }
 public:
     Initializable(
-        bool createIfNotExists,
-        bool throwsIfNotExists,
-        bool warnsIfNotExists,
-        bool verbose
-    ):
-        inifile(
-            createIfNotExists,
-            throwsIfNotExists,
-            warnsIfNotExists,
-            verbose
-        )
-    {
-        construct();
-    }
-
-    Initializable(
         const string& inifname, 
-        bool load, // = false, 
+        bool load,
         bool createIfNotExists,
         bool throwsIfNotExists,
         bool warnsIfNotExists,
@@ -65,10 +49,6 @@ public:
     }
 
     virtual ~Initializable() {}
-    
-    // virtual void init(const string& inifname, bool createIfNotExists, bool throwsIfNotExists) {
-    //     inifile.load(inifname, createIfNotExists, throwsIfNotExists);
-    // }
 
     virtual void reset(const IniData* inidata = nullptr) {
         if (inidata) inifile.setData(inidata->getDataCRef());

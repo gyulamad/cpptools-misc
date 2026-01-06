@@ -7,7 +7,7 @@
 
 using namespace std;
 
-bool file_put_contents(const string& filename, const string& content, bool append = false, bool throws = false) {
+inline bool file_put_contents(const string& filename, const string& content, bool append = false, bool throws = false) {
     // Open the file in the appropriate mode
     ios_base::openmode mode = ios::out | ios::binary;
     if (append) {

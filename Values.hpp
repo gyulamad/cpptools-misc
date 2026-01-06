@@ -35,7 +35,7 @@ public:
 
     ValuesT(
         const string& inifname, 
-        bool load, // = false, 
+        bool load,
         bool createIfNotExists,
         bool throwsIfNotExists,
         bool warnsIfNotExists,
