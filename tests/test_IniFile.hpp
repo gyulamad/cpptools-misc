@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../IniFile.hpp"
-
 #ifdef TEST
 
-
+#include "../TEST.hpp"
+#include "../IniFile.hpp"
 #include "../unlink.hpp"
 
 // Test for get
