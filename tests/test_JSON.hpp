@@ -1,11 +1,11 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../JSON.hpp"
 #include "../Value.hpp"
-
-#ifdef TEST
-
+#include "../str_diffs_show.hpp"
 
 TEST(test_json_remove_comments_no_comments) {
     string input = R"({"key": "value"})";

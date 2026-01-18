@@ -2,6 +2,7 @@
 
 #ifdef TEST
 
+#include "../TEST.hpp"
 #include "../is_numeric.hpp"
 
 TEST(test_is_numeric_integer_strings) {

@@ -165,9 +165,18 @@ public:
 
         string arg = args[idx];
         string prefixed_key = prefix + key;
-        if (trim(arg) == prefixed_key) // is (boolean) flag?
-            return (T)"";
-        prefixed_key += equal_to;        
+        
+        if (trim(arg) == prefixed_key) { // is (boolean) flag?
+            // Check if there's a value available
+            if (idx + 1 < (long int)(args.size()) && args[idx + 1][0] != '-') {
+                // Value is in the next argument
+                return parse<T>(args[idx + 1]);
+            }
+            // No value available - throw exception for non-bool types
+            throw ERROR("Missing value for argument: " + key + "\n" + help(key));
+        }
+
+        prefixed_key += equal_to;
         if (str_starts_with(arg, prefixed_key)) { // with '=' character
             // Extract value after "="
             string value = arg.substr(prefixed_key.length());

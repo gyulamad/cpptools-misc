@@ -24,6 +24,7 @@
 #include "test_datetime_to_sec.hpp"
 #include "test_date_to_ms.hpp"
 #include "test_date_to_sec.hpp"
+#include "test_escape.hpp"
 #include "test_execute.hpp"
 #include "test_Executor.hpp"
 #include "test_explode.hpp"

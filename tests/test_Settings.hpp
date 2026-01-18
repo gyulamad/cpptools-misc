@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../Settings.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../Settings.hpp"
 
 TEST(test_Settings_constructor_default) {
     Settings settings;
