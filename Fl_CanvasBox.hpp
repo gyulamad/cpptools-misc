@@ -1,5 +1,9 @@
 #pragma once
 
+// DEPENDENCY: fltk/fltk
+
+// TODO: this file may have to move to the grph lib
+
 #include <FL/fl_draw.H>
 #include "Canvas.hpp"
 #include <FL/Fl_Box.H>
