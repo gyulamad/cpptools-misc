@@ -184,7 +184,7 @@ void name()
 #include <vector>
 #include <string>
 
-struct { 
+inline struct { 
     void run(vector<string> filters = {}) {
         if (filters.empty()) return;
         throw ERROR("Filter(s) left for tests runner");
