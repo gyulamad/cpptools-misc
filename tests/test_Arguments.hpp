@@ -1,11 +1,12 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../Arguments.hpp"
 
 #include "../str_contains.hpp"
 
-#ifdef TEST
 
 TEST(test_Arguments_has_found) {
     vector<string> arg_strings = { "program", "--flag" };
