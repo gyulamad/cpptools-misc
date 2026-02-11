@@ -44,6 +44,8 @@
 #include "test_JSONExts.hpp"
 #include "test_latest_file_time_in_folder.hpp"
 #include "test_filemtime_duration.hpp"
+#include "test_filemtime_ms.hpp"
+#include "test_highlight_compiler_outputs.hpp"
 #include "test_mkdir.hpp"
 #include "test_ms_to_datetime.hpp"
 #include "test_parse.hpp"

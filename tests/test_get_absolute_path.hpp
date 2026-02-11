@@ -69,4 +69,15 @@ TEST(test_get_absolute_path_double_dot) {
     assert(actual == expected && "'..' should resolve to parent directory");
 }
 
+TEST(test_get_absolute_path_nonexistent_file) {
+    bool threw = false;
+    try {
+        get_absolute_path("/nonexistent/path/file.txt");
+    } catch (exception& e) {
+        threw = true;
+        assert(str_contains(e.what(), "File not found") && "Exception should mention file not found");
+    }
+    assert(threw && "Should throw exception for nonexistent file");
+}
+
 #endif
