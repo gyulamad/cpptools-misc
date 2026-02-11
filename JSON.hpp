@@ -132,41 +132,70 @@ enum json_type {
 extern string json_last_error;
 
 // Function to convert jq-style or JavaScript-style selector to json_pointer
-nlohmann::json::json_pointer _json_selector(string jselector) {
-    if (jselector.empty()) return nlohmann::json::json_pointer("/");
-    if (jselector[0] != '.') jselector = "." + jselector;
+    nlohmann::json::json_pointer _json_selector(string jselector) {
+        if (jselector.empty()) return nlohmann::json::json_pointer("/");
+        if (jselector[0] != '.') jselector = "." + jselector;
 
-    vector<string> splits = explode(".", jselector);
+        vector<string> splits = explode(".", jselector);
 
-    for (size_t i = 1; i < splits.size(); i++) {
-        if (splits[i].empty())
-            throw ERROR("Invalid json selector: " + jselector);
+        for (size_t i = 1; i < splits.size(); i++) {
+            if (splits[i].empty())
+                throw ERROR("Invalid json selector: " + jselector);
 
-        regex valid_brackets("\\[\\s*(\\d+)\\s*\\]$");
-        regex invalid_brackets("\\[[^\\]]+\\]$");
-        smatch match;
+            // Process all bracket pairs in the split part
+            string result;
+            size_t pos = 0;
+            while (pos < splits[i].size()) {
+                // Find the next bracket
+                size_t bracket_start = splits[i].find('[', pos);
+                if (bracket_start == string::npos) {
+                    // No more brackets, add the rest
+                    result += splits[i].substr(pos);
+                    break;
+                }
 
-        if (regex_search(splits[i], match, valid_brackets)) {
-            splits[i] = regex_replace(splits[i], valid_brackets, "/$1");
-            continue;
+                // Add the text before the bracket
+                result += splits[i].substr(pos, bracket_start - pos);
+
+                // Find the closing bracket
+                size_t bracket_end = splits[i].find(']', bracket_start);
+                if (bracket_end == string::npos) {
+                    throw ERROR("Invalid json selector: " + jselector);
+                }
+
+                // Extract the index
+                string index_str = splits[i].substr(bracket_start + 1, bracket_end - bracket_start - 1);
+                // Remove whitespace
+                index_str.erase(0, index_str.find_first_not_of(" \t"));
+                index_str.erase(index_str.find_last_not_of(" \t") + 1);
+
+                // Validate that index is a number
+                if (index_str.empty() || index_str.find_first_not_of("0123456789") != string::npos) {
+                    throw ERROR("Invalid json selector: " + jselector);
+                }
+
+                result += "/" + index_str;
+                pos = bracket_end + 1;
+            }
+            splits[i] = result;
         }
 
-        if (regex_search(splits[i], match, invalid_brackets)) {
+        int open_brackets = 0, close_brackets = 0;
+        for (char ch : jselector) {
+            if (ch == '[') open_brackets++;
+            if (ch == ']') close_brackets++;
+        }
+        if (open_brackets != close_brackets) {
             throw ERROR("Invalid json selector: " + jselector);
         }
-    }
 
-    int open_brackets = 0, close_brackets = 0;
-    for (char ch : jselector) {
-        if (ch == '[') open_brackets++;
-        if (ch == ']') close_brackets++;
+        string joined = implode("/", splits);
+        // Remove leading double slash if present
+        if (joined.size() >= 2 && joined[0] == '/' && joined[1] == '/') {
+            joined = joined.substr(1);
+        }
+        return nlohmann::json::json_pointer(joined);
     }
-    if (open_brackets != close_brackets) {
-        throw ERROR("Invalid json selector: " + jselector);
-    }
-
-    return nlohmann::json::json_pointer(implode("/", splits));
-}
 
 // Check if a JSON string is valid
 bool is_valid_json(string jstring) {
@@ -331,6 +360,33 @@ public:
             throw ERROR("JSON dump error: " + string(e.what()));
         }
     }
+
+    // Append a value to an array at the given path
+        // If the path points to the root (empty or "/") and the value is an array, append to it
+        // If the path points to an existing array, append to it
+        // If the path points to an array index beyond the current size, append to the array
+        void append(string jselector, const JSON& value) {
+            try {
+                json::json_pointer ptr = _json_selector(jselector);
+                
+                // If selector is empty, we're appending to the root
+                if (jselector.empty()) {
+                    if (!j.is_array()) {
+                        throw ERROR("JSON Error at: " + jselector + ", reason: root is not an array");
+                    }
+                    j.push_back(value.get_json());
+                } else {
+                    // Use operator[] to get the array - this will create the element if it doesn't exist
+                    auto& arr = j[ptr];
+                    if (!arr.is_array()) {
+                        throw ERROR("JSON Error at: " + jselector + ", reason: value is not an array");
+                    }
+                    arr.push_back(value.get_json());
+                }
+            } catch (const json::exception& e) {
+                throw ERROR("JSON Error at: " + jselector + ", reason: " + string(e.what()));
+            }
+        }
    
     bool isDefined(string jselector) const {
         try {

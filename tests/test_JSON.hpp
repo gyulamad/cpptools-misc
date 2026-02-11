@@ -862,4 +862,85 @@ TEST(test_JSON_set) {
     assert(actual == 42 && "Set value should update the JSON object");
 }
 
+TEST(test_JSON_append_empty_array) {
+    JSON json("[]");
+    JSON value1 = JSON("1");
+    JSON value2 = JSON("2");
+    json.append("", value1);
+    json.append("", value2);
+    string actual = json.dump();
+    assert(actual == "[1,2]" && "Append to empty array should work");
+}
+
+TEST(test_JSON_append_to_existing_array) {
+    JSON json("[1, 2]");
+    JSON value3 = JSON("3");
+    // Append to the root of the array (index beyond current size)
+    // The append method should handle this by using push_back
+    json.append("", value3);
+    string actual = json.dump();
+    assert(actual == "[1,2,3]" && "Append to existing array should work");
+}
+
+TEST(test_JSON_append_object_to_array) {
+    JSON json("[]");
+    JSON obj = JSON("{}");
+    obj.set(".name", "Alice");
+    obj.set(".age", 30);
+    json.append("", obj);
+    string actual = json.dump();
+    // nlohmann::json doesn't guarantee order, so we check for the presence of expected content
+    assert(str_contains(actual, "\"age\":30") && "Object should contain age");
+    assert(str_contains(actual, "\"name\":\"Alice\"") && "Object should contain name");
+}
+
+TEST(test_JSON_append_nested_array) {
+    JSON json("[[1, 2]]");
+    JSON value3 = JSON("3");
+    // Append to the nested array at index 0
+    json.append(".[0]", value3);
+    string actual = json.dump();
+    assert(actual == "[[1,2,3]]" && "Append to nested array should work");
+}
+
+TEST(test_JSON_append_error_non_array) {
+    bool thrown = false;
+    try {
+        JSON json("{\"key\": \"value\"}");
+        JSON value = JSON("\"test\"");
+        json.append(".key", value);
+    } catch (const exception& e) {
+        thrown = true;
+        string actual = e.what();
+        assert(str_contains(actual, "value is not an array") && "Exception should mention non-array");
+    }
+    assert(thrown && "Exception should be thrown for non-array");
+}
+
+TEST(test_JSON_append_error_path_not_exist) {
+    bool thrown = false;
+    try {
+        JSON json("{}");
+        JSON value = JSON("\"test\"");
+        json.append(".missing", value);
+    } catch (const exception& e) {
+        thrown = true;
+        string actual = e.what();
+        assert(str_contains(actual, "value is not an array") && "Exception should mention value is not an array");
+    }
+    assert(thrown && "Exception should be thrown for missing path");
+}
+
+TEST(test_JSON_append_multiple_values) {
+    JSON json("[]");
+    for (int i = 0; i < 5; i++) {
+        JSON value = JSON(to_string(i));
+        json.append("", value);
+    }
+    string actual = json.dump();
+    // The output should be [0,1,2,3,4] as JSON numbers (not strings)
+    string expected = "[0,1,2,3,4]";
+    assert(actual == expected && "Append multiple values should work");
+}
+
 #endif
