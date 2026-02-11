@@ -1,43 +1,56 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../str_ends_with.hpp"
 
-#ifdef TEST
-
-TEST(test_str_ends_with_basic_match) {
-    assert(str_ends_with("hello world", "world") && "Basic match failed");
-    assert(str_ends_with("test", "est") && "Suffix match failed");
-    assert(str_ends_with("abc", "c") && "Single char suffix match failed");
+TEST(test_str_ends_with_empty_string) {
+    string str = "";
+    string suffix = "";
+    assert(str_ends_with(str, suffix) == true && "Empty string with empty suffix");
 }
 
-TEST(test_str_ends_with_full_match) {
-    assert(str_ends_with("abc", "abc") && "Full string match failed");
+TEST(test_str_ends_with_empty_suffix) {
+    string str = "hello world";
+    string suffix = "";
+    assert(str_ends_with(str, suffix) == true && "Non-empty string with empty suffix");
+}
+
+TEST(test_str_ends_with_exact_match) {
+    string str = "hello world";
+    string suffix = "hello world";
+    assert(str_ends_with(str, suffix) == true && "Exact match");
+}
+
+TEST(test_str_ends_with_partial_match) {
+    string str = "hello world";
+    string suffix = "world";
+    assert(str_ends_with(str, suffix) == true && "Partial match at end");
 }
 
 TEST(test_str_ends_with_no_match) {
-    assert(!str_ends_with("abc", "abd") && "Should not match different suffix");
-    assert(!str_ends_with("test", "fail") && "Should not match completely different suffix");
+    string str = "hello world";
+    string suffix = "hello";
+    assert(str_ends_with(str, suffix) == false && "No match");
 }
 
-TEST(test_str_ends_with_prefix_longer_than_string) {
-    assert(!str_ends_with("abc", "abcd") && "Suffix longer than string should fail");
+TEST(test_str_ends_with_different_case) {
+    string str = "Hello World";
+    string suffix = "world";
+    assert(str_ends_with(str, suffix) == false && "Different case");
 }
 
-TEST(test_str_ends_with_empty_string) {
-    assert(str_ends_with("abc", "") && "Empty suffix should always match");
-    assert(!str_ends_with("", "a") && "Non-empty suffix on empty string should fail");
-    assert(str_ends_with("", "") && "Empty suffix on empty string should pass");
+TEST(test_str_ends_with_longer_suffix) {
+    string str = "hello";
+    string suffix = "hello world";
+    assert(str_ends_with(str, suffix) == false && "Longer suffix than string");
 }
 
-TEST(test_str_ends_with_case_sensitivity) {
-    assert(!str_ends_with("Hello", "hello") && "String comparison is case-sensitive");
-    assert(str_ends_with("Hello", "ello") && "Case sensitive match succeeded");
-}
-
-TEST(test_str_ends_with_complex_suffix) {
-    assert(str_ends_with("file.txt", ".txt") && "Should match .txt extension");
-    assert(!str_ends_with("file.txt", "txt.") && "Should not match reversed suffix");
+TEST(test_str_ends_with_special_chars) {
+    string str = "test$@#";
+    string suffix = "$@#";
+    assert(str_ends_with(str, suffix) == true && "Special characters");
 }
 
 #endif
