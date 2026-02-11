@@ -86,7 +86,7 @@ public:
     }
 
     bool hasHelp(const size_t at) const {
-        return at <= helps.at.size();
+        return at < helps.at.size();
     }
 
     const vector<string>& getArgsCRef() const {
@@ -95,7 +95,6 @@ public:
 
     // Check if an argument exists
     bool has(const string& key, const string& prefix = "--") const {
-        checkHelp(key, prefix);
         string prefixed_key = prefix + key;
         for (const auto& arg : args) 
             if (arg == prefixed_key || str_starts_with(arg, prefixed_key + equal_to)) 
@@ -109,9 +108,7 @@ public:
 
     // Check if an argument exists
     bool has(size_t at) const {
-        if (!hasHelp(at))
-            throw ERROR("Help is not provided for argument at " + to_string(at));
-        return at < args.size();
+        return at + 1 < args.size();
     }
 
     // Get the index of a specific argument
@@ -143,14 +140,14 @@ public:
 
     // Get a boolean value at position
     bool getBool(size_t at) const {
-        if (has(at)) 
+        if (!has(at)) 
             throw ERROR("Missing argument at: " + to_string(at) + "\n" + help(at));
-        return parse<bool>(args[at]);
+        return parse<bool>(args[at + 1]);
     }
 
     // Get a boolean value at position (with default value)
     bool getBool(size_t at, bool defval) const {
-        return has(at) ? defval : parse<bool>(args[at]);
+        return has(at) ? parse<bool>(args[at + 1]) : defval;
     }
 
     //  =================================== Templated getters ===================================
@@ -183,13 +180,10 @@ public:
             if (value.empty()) 
                 throw ERROR("Missing value for argument: " + key + "\n" + help(key));
             return parse<T>(value);
-        } else if (idx + 1 < (long int)(args.size()))
-            // Value is in the next argument
-            return parse<T>(args[idx + 1]);
-        else
-            throw ERROR("Missing value for argument: " + key + "\n" + help(key));
+        }
+        throw ERROR("Missing value for argument: " + key + "\n" + help(key));
     }
-    
+
     template<typename T>
     T getByKey(const Key& keys) const {
         if (has(keys.first, prefix)) return get<T>(keys.first, prefix);
@@ -214,13 +208,13 @@ public:
     T get(size_t at) const {
         if (!has(at)) 
             throw ERROR("Missing argument at: " + to_string(at) + "\n" + help(at));
-        return parse<T>(args[at]);
+        return parse<T>(args[at + 1]);
     }
 
     // Templated getter with default value for positional lookup
     template<typename T>
     T getopt(size_t at, const T& defval) const {
-        return !has(at) ? defval : parse<T>(args[at]);
+        return has(at) ? parse<T>(args[at + 1]) : defval;
     }
 
     string help() const {
