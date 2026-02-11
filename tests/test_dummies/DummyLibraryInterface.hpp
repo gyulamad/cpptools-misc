@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../../safe.hpp"
-
 class DummyLibraryInterface {
 public:
     virtual ~DummyLibraryInterface() = default;

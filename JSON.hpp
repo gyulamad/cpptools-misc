@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 #include <stack>
-#include <regex>
 
 using namespace std;
 using namespace nlohmann;

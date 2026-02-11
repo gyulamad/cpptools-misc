@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../get_absolute_path.hpp"
-
-#ifdef TEST
 
 
 #include "../get_cwd.hpp"

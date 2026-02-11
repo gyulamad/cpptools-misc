@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../str_printf.hpp"
-
-#ifdef TEST
 
 
 #include "../str_contains.hpp"
