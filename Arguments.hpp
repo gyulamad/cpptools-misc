@@ -253,10 +253,16 @@ public:
     string help(const Key& k) const {
         string output;
         for (const auto& [key, description] : helps.key) {
-            if (key.first == k.first || key.second == k.second)
+            if (k.first.empty() && k.second.empty()) {
+                // Empty key means show all
                 output += "\n" + prefix + key.first 
                     + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
                     + description + "\n";
+            } else if (key.first == k.first || key.second == k.second) {
+                output += "\n" + prefix + key.first 
+                    + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
+                    + description + "\n";
+            }
         }
         return output;
     }
