@@ -68,7 +68,7 @@
 #include "test_str_diffs_show.hpp"
 #include "test_str_ends_with.hpp"
 #include "test_str_get_diffs.hpp"
-// #include "test_str_printf.hpp"
+#include "test_str_printf.hpp"
 #include "test_str_replace.hpp"
 #include "test_str_serialize.hpp"
 #include "test_str_starts_with.hpp"

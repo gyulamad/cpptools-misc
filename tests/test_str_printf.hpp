@@ -72,7 +72,7 @@ TEST(test_str_printf_very_long_string) {
 TEST(test_str_printf_null_pointer) {
     const char* null_ptr = nullptr;
     string result = str_printf("Pointer: %p", (void*)null_ptr);
-    assert(str_contains(result, "0x0") || str_contains(result, "(nil)") && "Null pointer should format as 0x0 or (nil)");
+    assert((str_contains(result, "0x0") || str_contains(result, "(nil)")) && "Null pointer should format as 0x0 or (nil)");
 }
 
 #endif
