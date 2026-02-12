@@ -10,6 +10,19 @@
 
 using namespace std;
 
+/**
+ * \class Arguments
+ * \brief Command-line argument parser
+ * 
+ * This class parses command-line arguments following standard C/C++ convention:
+ * - args[0] is the program name (argv[0])
+ * - args[1] is the first command-line argument
+ * - args[2] is the second command-line argument
+ * - and so on...
+ * 
+ * Arguments supports both positional access (args.get<T>(index)) and 
+ * key-based access (args.get<T>("key")) for flags like --key=value or -k value.
+ */
 class Arguments {
 public:
     using Key = pair<string, string>;
@@ -19,6 +32,7 @@ public:
     };
 
     // Constructor that initializes from command-line arguments
+    // Note: argc/argv follow standard C convention where argv[0] is the program name
     Arguments(
         int argc, char* argv[],
         const string& prefix = "--", 
@@ -29,6 +43,9 @@ public:
         prefix_short(prefix_short),
         equal_to(equal_to)
     {
+        // Copy all arguments from argv to args vector
+        // argv[0] (program name) becomes args[0]
+        // argv[1] (first arg) becomes args[1], etc.
         for (int i = 0; i < argc; i++) 
             args.push_back(string(argv[i]));
     }
@@ -236,6 +253,8 @@ public:
     }
 
     string help(size_t at) const {
+        if (at >= helps.at.size()) 
+            throw ERROR("No help provided to argument at " + to_string(at));
         return helps.at[at].first + ": " + helps.at[at].second;
     }
 
