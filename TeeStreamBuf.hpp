@@ -16,8 +16,13 @@ protected:
             if (console->sputc(c) == EOF || capture->sputc(c) == EOF) {
                 return EOF;
             }
+            return c;
         }
-        return c;
+        // c == EOF: flush the buffer
+        if (console->pubsync() == -1 || capture->pubsync() == -1) {
+            return EOF;
+        }
+        return EOF;
     }
 
     int sync() override {

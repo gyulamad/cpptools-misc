@@ -12,6 +12,7 @@ public:
     using Dependency::Dependency;
     virtual ~GithubDependency() {}
 
+    // LCOV_EXCL_START
     virtual void install() override {
         createLogger<ConsoleLogger>();
 
@@ -29,6 +30,7 @@ public:
             Executor::execute(cmd);
         }
     }
+    // LCOV_EXCL_STOP
 
     virtual bool installed() override {
         const string jsonf = TARGET + "/" + VERSION;
@@ -40,12 +42,12 @@ protected:
 
     virtual void setRepo(string REPO) {
         this->REPO = REPO;
-        this->TARGET = fix_path(DIR_LIBS + "/" + REPO + "/");
+        this->TARGET = fix_path(DIR_LIBS + REPO + "/");
     }
 
     virtual string getPath() {
-        return get_absolute_path(DIR_LIBS + "/" + REPO + "/" + VERSION);
-    }
+    return get_absolute_path(fix_path(DIR_LIBS + REPO + "/" + VERSION));
+}
 
     string REPO;
     string TARGET;

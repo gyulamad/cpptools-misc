@@ -94,7 +94,14 @@
 #include "test_vector_save.hpp"
 #include "test_capture_cout.hpp"
 #include "test_IniFile.hpp"
+#include "test_IniData.hpp"
 #include "test_Sequence.hpp"
+#include "test_Dependency.hpp"
+#include "test_GithubDependency.hpp"
+#include "test_Initializable.hpp"
+#include "test_Logger.hpp"
+#include "test_TEST.hpp"
+#include "test_TeeStreamBuf.hpp"
 #endif // TEST
 
 int main() {

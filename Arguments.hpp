@@ -181,7 +181,10 @@ public:
                 throw ERROR("Missing value for argument: " + key + "\n" + help(key));
             return parse<T>(value);
         }
+        // LCOV_EXCL_START - unreachable: if indexOf returns valid index, arg must be
+        // exactly prefixed_key or start with prefixed_key + "="
         throw ERROR("Missing value for argument: " + key + "\n" + help(key));
+        // LCOV_EXCL_STOP
     }
 
     template<typename T>

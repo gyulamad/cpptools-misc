@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../Executor.hpp"
-
-#ifdef TEST
 
 
 #include "../capture_cout.hpp"
@@ -53,6 +53,31 @@ TEST(test_Executor_display_output_when_nullptr) {
         assert(str_contains(errs, "No such file or directory") && "Error massage should contains error infos");
     }
     assert(t && "Should throw");
+}
+
+TEST(test_Executor_capture_output_nullptr_errors) {
+    // Test that outputs are captured when errors is nullptr
+    string output;
+    int status = Executor::execute("echo 'Test output'", &output, nullptr);
+    assert(status == 0 && "Command should succeed");
+    assert(output == "Test output\n" && "Should capture output when errors is nullptr");
+}
+
+TEST(test_Executor_capture_errors_nullptr_output) {
+    // Test that errors are captured when outputs is nullptr
+    string error;
+    int status = Executor::execute("echo 'Test error' >&2", nullptr, &error, false);
+    assert(status == 0 && "Command should succeed");
+    assert(error == "Test error\n" && "Should capture error when outputs is nullptr");
+}
+
+TEST(test_Executor_both_nullptr) {
+    // Test that both outputs and errors are nullptr (writes to cout/cerr)
+    string captured = capture_cout([]() {
+        int status = Executor::execute("echo 'Captured output'", nullptr, nullptr);
+        assert(status == 0 && "Command should succeed");
+    });
+    assert(str_contains(captured, "Captured output") && "Should capture cout output");
 }
 
 TEST(test_Executor_mixed_output_and_error_capture) {
