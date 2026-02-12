@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../array_unique.hpp"
-
-#ifdef TEST
 
 
 TEST(test_array_unique_basic) {

@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../in_array.hpp"
-
-#ifdef TEST
 
 // Test cases for in_array
 

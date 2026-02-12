@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../JSONExts.hpp"
-
-#ifdef TEST
 
 
 // Test JSONExts::extends

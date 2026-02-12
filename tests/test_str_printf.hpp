@@ -5,7 +5,6 @@
 #include "../TEST.hpp"
 #include "../str_printf.hpp"
 
-
 #include "../str_contains.hpp"
 
 // Test struct for cases that need multiple inputs

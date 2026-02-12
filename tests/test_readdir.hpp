@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../readdir.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../readdir.hpp"
 
 #include <fstream>
 

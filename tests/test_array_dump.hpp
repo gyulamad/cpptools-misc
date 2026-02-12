@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../array_dump.hpp"
-
 #ifdef TEST
 
-
+#include "../TEST.hpp"
+#include "../array_dump.hpp"
 #include "../capture_cout.hpp"
 
 TEST(test_array_dump_basic) {

@@ -452,7 +452,7 @@ public:
             // j[ptr] = value;
             // jstring = j.dump();
             j[ptr] = value;
-        } catch (const json::exception& e) {
+        } catch (const exception& e) {
             //DEBUG(j.dump());
             throw ERROR("JSON Error at: " + jselector + ", reason: " + string(e.what()));
         }

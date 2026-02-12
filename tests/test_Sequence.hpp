@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../Sequence.hpp"
-
 #ifdef TEST
 
-
+#include "../TEST.hpp"
+#include "../Sequence.hpp"
 #include "../str_contains.hpp"
 
 TEST(test_Sequence_basic_operations) {

@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../strtoupper.hpp"
-
-#ifdef TEST
 
 
 TEST(test_strtoupper_basic_conversion) {

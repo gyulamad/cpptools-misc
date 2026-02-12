@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../array_merge.hpp"
-
 #ifdef TEST
 
-
+#include "../TEST.hpp"
+#include "../array_merge.hpp"
 #include "../vector_equal.hpp"
 
 TEST(test_array_merge_basic) {

@@ -1,12 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../Builder.hpp"
-
 #ifdef TEST
 
-
-
+#include "../TEST.hpp"
+#include "../Builder.hpp"
 #include "../str_contains.hpp"
 #include "test_dummies/DummyLibraryInterface.hpp"
 #include "../__DIR__.hpp"

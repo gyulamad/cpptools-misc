@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../array_slice.hpp"
-
-#ifdef TEST
 
 
 TEST(test_array_slice_basic) {

@@ -4,8 +4,6 @@
 
 #include "../TEST.hpp"
 #include "../get_absolute_path.hpp"
-
-
 #include "../get_cwd.hpp"
 
 TEST(test_get_absolute_path_relative) {

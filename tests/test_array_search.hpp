@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../array_search.hpp"
-
-#ifdef TEST
 
 TEST(test_array_search_vector_found) {
     vector<string> data = {"apple", "banana", "cherry"};

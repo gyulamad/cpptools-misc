@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../str_serialize.hpp"
-
 #ifdef TEST
 
-
+#include "../TEST.hpp"
+#include "../str_serialize.hpp"
 #include "../str_deserialize.hpp"
 
 // Test struct for organizing test data

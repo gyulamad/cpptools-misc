@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../foreach.hpp"
-
-#ifdef TEST
 
 
 TEST(test_ContainerTraits_vector_iterate_no_index_no_break) {

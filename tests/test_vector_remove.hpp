@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../vector_remove.hpp"
-
-#ifdef TEST
 
 
 TEST(test_vector_remove) {

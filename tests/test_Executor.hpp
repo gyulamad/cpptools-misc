@@ -4,8 +4,6 @@
 
 #include "../TEST.hpp"
 #include "../Executor.hpp"
-
-
 #include "../capture_cout.hpp"
 
 // Test struct for complex test cases

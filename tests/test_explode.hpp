@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../explode.hpp"
-
-#ifdef TEST
 
 
 TEST(test_explode_basic) {

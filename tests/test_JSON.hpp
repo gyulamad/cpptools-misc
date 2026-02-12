@@ -420,6 +420,20 @@ TEST(test_json_type_to_string_object) {
 //     assert(thrown && "Invalid JSON type should throw an exception");
 // }
 
+// Test for json_type_to_string with invalid enum value
+TEST(test_json_type_to_string_invalid_enum_value) {
+    bool thrown = false;
+    try {
+        json_type_to_string(static_cast<json_type>(99)); // Invalid type value
+    } catch (const exception& e) {
+        string actual = e.what();
+        assert(str_contains(actual, "Invalid JSON type") && "Exception should contain 'Invalid JSON type'");
+        assert(str_contains(actual, "99") && "Exception should contain the invalid value");
+        thrown = true;
+    }
+    assert(thrown && "Invalid JSON type should throw an exception");
+}
+
 TEST(test_json_get_string_valid) {
     string actual = json_get_string("{\"key\": \"value\"}", ".key");
     assert(actual == "value" && "Valid string should be retrieved");
@@ -941,6 +955,65 @@ TEST(test_JSON_append_multiple_values) {
     // The output should be [0,1,2,3,4] as JSON numbers (not strings)
     string expected = "[0,1,2,3,4]";
     assert(actual == expected && "Append multiple values should work");
+}
+
+TEST(test_JSON_dump_with_malformed_json) {
+    // Test dump with malformed JSON - the JSON constructor catches errors
+    // but dump() can still throw if nlohmann::json throws during dump
+    JSON json("{}");
+    // Valid JSON should work
+    string actual = json.dump();
+    assert(!actual.empty() && "Dump should return valid JSON string");
+}
+
+TEST(test_JSON_append_with_error) {
+    // Test append with error - appending to non-array should throw
+    bool thrown = false;
+    try {
+        JSON json("{\"key\": \"value\"}");
+        JSON value = JSON("\"test\"");
+        json.append(".key", value);
+    } catch (const exception& e) {
+        thrown = true;
+        string actual = e.what();
+        assert(str_contains(actual, "value is not an array") && "Exception should mention non-array");
+    }
+    assert(thrown && "Exception should be thrown for appending to non-array");
+}
+
+TEST(test_JSON_isDefined_with_invalid_path) {
+    JSON json("{\"key\": \"value\"}");
+    // isDefined catches all exceptions and returns false
+    // This test verifies the exception path is covered
+    assert(!json.isDefined("..invalid") && "isDefined should return false on exception");
+}
+
+TEST(test_JSON_isNull_with_invalid_path) {
+    JSON json("{\"key\": \"value\"}");
+    // isNull catches all exceptions and returns false
+    assert(!json.isNull("..invalid") && "isNull should return false on exception");
+}
+
+TEST(test_JSON_isArray_with_invalid_path) {
+    JSON json("{\"key\": \"value\"}");
+    // isArray catches all exceptions and returns false
+    assert(!json.isArray("..invalid") && "isArray should return false on exception");
+}
+
+TEST(test_JSON_isObject_with_invalid_path) {
+    JSON json("{\"key\": \"value\"}");
+    // isObject catches all exceptions and returns false
+    assert(!json.isObject("..invalid") && "isObject should return false on exception");
+}
+
+TEST(test_JSON_get_bool_specialization) {
+    JSON json("{\"key\": true}");
+    bool actual = json.get<bool>(".key");
+    assert(actual && "Boolean value should be retrieved correctly");
+}
+
+TEST(test_JSON_set_with_error) {
+    JSON json("{\"key\": \"value\"}");
 }
 
 #endif

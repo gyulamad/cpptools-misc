@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../Bitmask.hpp"
-
-#ifdef TEST
 
 
 // Test cases using TEST macro

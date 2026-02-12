@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../array_remove.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../array_remove.hpp"
 #include "../str_contains.hpp"  // Only when testing
 #include "../array_remove.hpp"  // Include the real implementation
 #include <vector>

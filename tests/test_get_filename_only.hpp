@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../get_filename_only.hpp"
-
-#ifdef TEST
 
 
 TEST(test_get_filename_only_basic) {

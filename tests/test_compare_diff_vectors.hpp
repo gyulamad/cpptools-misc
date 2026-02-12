@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../compare_diff_vectors.hpp"
-
-#ifdef TEST
 
 
 TEST(test_compare_diff_vectors_identical) {

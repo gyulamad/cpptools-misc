@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../implode.hpp"
-
-#ifdef TEST
 
 TEST(test_implode_basic) {
     vector<string> parts = {"a", "b", "c"};

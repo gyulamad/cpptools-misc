@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../ShorthandGenerator.hpp"
-
-#ifdef TEST
 
 // Test Strategy 1: First character
 TEST(test_ShorthandGenerator_first_character) {

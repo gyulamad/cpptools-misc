@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../fix_path.hpp"
-
-#ifdef TEST
 
 TEST(test_fix_path_basic) {
     string actual = fix_path("some/path/./file.txt");

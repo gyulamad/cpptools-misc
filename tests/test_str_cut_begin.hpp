@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../str_cut_begin.hpp"
-
-#ifdef TEST
 
 
 TEST(test_str_cut_begin_when_string_is_short) {

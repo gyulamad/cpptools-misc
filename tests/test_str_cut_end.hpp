@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../str_cut_end.hpp"
-
-#ifdef TEST
 
 // Test cases for str_cut_end
 TEST(test_str_cut_end_when_string_is_short) {

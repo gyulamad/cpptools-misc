@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../capture_cout.hpp"
-
-#ifdef TEST
 
 
 TEST(test_capture_cout_basic) {

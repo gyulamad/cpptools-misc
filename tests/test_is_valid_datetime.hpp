@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../is_valid_datetime.hpp"
-
-#ifdef TEST
 
 
 TEST(test_is_valid_datetime) {

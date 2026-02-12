@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../rsort.hpp"
-
-#ifdef TEST
 
 
 TEST(test_rsort_basic) {
