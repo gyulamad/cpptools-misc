@@ -18,6 +18,8 @@
 #include "implode.hpp"
 #include <iostream>
 #include "ConsoleLogger.hpp"
+#include "Arguments.hpp"
+#include "explode.hpp"
 
 using namespace std;
 
@@ -32,6 +34,12 @@ public:
     
     void add(string info, Test test) {
         tests[info] = test;
+    }
+
+    void run(Arguments& args) {
+        args.addHelper("filter", "Filter tests by name - optinal, comma separated.");
+        const vector<string> filter = trim(explode(",", args.getopt<string>("filter", "")));
+        run(filter);
     }
 
     void run(vector<string> filters = {}) {
@@ -183,8 +191,17 @@ void name()
 #include "ERROR.hpp"
 #include <vector>
 #include <string>
+#include "Arguments.hpp"
+#include "explode.hpp"
 
 inline struct { 
+
+    void run(Arguments& args) {
+        args.addHelper("filter", "Filter tests by name - optinal, comma separated.");
+        const vector<string> filter = trim(explode(",", args.getopt<string>("filter", "")));
+        run(filter);
+    }
+
     void run(vector<string> filters = {}) {
         if (filters.empty()) return;
         throw ERROR("Filter(s) left for tests runner");
