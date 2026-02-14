@@ -50,6 +50,8 @@ protected:
    
     const Arguments::Key PRM_NO_PCH = { "no-pch", "npch" };  // precompiled headers
     const Arguments::Key PRM_COMPRESS = { "compress", "cmprss" };  // zip builds
+    
+    const Arguments::Key PRM_COVERAGE_EXCLUDE = { "coverage-exclude", "cov-excl" };  // coverage exclusion patterns
 
     // "mode" argument selected compile flags
     const vector<string> FLAGS = { "--std=c++20" };
@@ -142,6 +144,8 @@ protected:
             "Turns off precompiled headers (optional argument)");
         args.addHelpByKey(PRM_COMPRESS, // TODO
             "Turns off built cache compression (optional argument)");
+        args.addHelpByKey(PRM_COVERAGE_EXCLUDE,
+            "Comma-separated list of file patterns to exclude from coverage report (e.g., 'cpptools/misc/*,tests/*')");
 
             
         Stopper stopper;
@@ -208,6 +212,10 @@ protected:
 
         // "coverage" argument (on/off) creates coverage report
         const bool coverage = in_array(MODE_COVERAGE, modes);
+        
+        // "coverage-exclude" argument for excluding files from coverage report
+        const string coverageExcludePatterns = args.has(PRM_COVERAGE_EXCLUDE) 
+            ? args.getByKey<string>(PRM_COVERAGE_EXCLUDE) : "";
 
         
         // "strict" argument (on/off) set the compilation to 
@@ -353,8 +361,22 @@ protected:
                 const string browseCoverageCommand = 
                     COVERAGE_BROWSER + " " + 
                     coverageOutputPath + "/index.html";
+                // Build the lcov exclude patterns string
+                string excludePatterns = "";
+                if (!coverageExcludePatterns.empty()) {
+                    vector<string> patterns = explode(",", coverageExcludePatterns);
+                    for (const string& pattern : patterns) {
+                        string trimmedPattern = trim(pattern);
+                        // If pattern doesn't start with /, make it relative to cwd
+                        if (trimmedPattern[0] != '/') {
+                            trimmedPattern = get_cwd() + "/" + trimmedPattern;
+                        }
+                        excludePatterns += "--exclude '" + trimmedPattern + "' ";
+                    }
+                }
+                
                 const string createCoverageCommand = 
-                    "lcov --no-external --directory . --capture --output-file " 
+                    "lcov --no-external " + excludePatterns + "--directory . --capture --output-file " 
                         + coverageInfoFilePath + " && \\"
                     "php autobuild/lcov-fixer.php " // TODO implement lcov-fixer in C++ instead depending on php 
                         + coverageInfoFilePath + " && \\"
