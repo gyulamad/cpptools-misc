@@ -14,9 +14,9 @@ string str_deserialize(const vector<S>& serialized, size_t& nxt) {
     // Deserialize size from 4 bytes
     if (nxt + 4 > serialized.size())
         throw ERROR("String serialized size mismatch");
-    size_t size = (static_cast<size_t>(static_cast<unsigned char>(serialized[nxt])) << 24) |
-                  (static_cast<size_t>(static_cast<unsigned char>(serialized[nxt + 1])) << 16) |
-                  (static_cast<size_t>(static_cast<unsigned char>(serialized[nxt + 2])) << 8) |
+    size_t size = ((static_cast<size_t>(static_cast<unsigned char>(serialized[nxt]))) << 24) |
+                  ((static_cast<size_t>(static_cast<unsigned char>(serialized[nxt + 1]))) << 16) |
+                  ((static_cast<size_t>(static_cast<unsigned char>(serialized[nxt + 2]))) << 8) |
                   static_cast<size_t>(static_cast<unsigned char>(serialized[nxt + 3]));
     nxt += 4;
     if (nxt + size > serialized.size())

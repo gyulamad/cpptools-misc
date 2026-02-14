@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../execute.hpp"
-
-#ifdef TEST
 
 
 TEST(test_execute_successful_output) {

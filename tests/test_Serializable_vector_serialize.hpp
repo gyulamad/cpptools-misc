@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../Serializable_vector_serialize.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../Serializable_vector_serialize.hpp"
 #include "../str_contains.hpp"
 #include "../str_serialize.hpp"
 #include "../str_deserialize.hpp"

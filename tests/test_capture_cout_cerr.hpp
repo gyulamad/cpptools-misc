@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../capture_cout_cerr.hpp"
-
-#ifdef TEST
 
 TEST(test_capture_cout_cerr_basic) {
     string actual = capture_cout_cerr([]() {

@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../array_splice.hpp"
-
 #ifdef TEST
 
-
+#include "../TEST.hpp"
+#include "../array_splice.hpp"
 #include "../vector_equal.hpp"
 
 // Test struct for complex test data (when needed)

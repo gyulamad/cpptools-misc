@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../regx_match_all.hpp"
-
-#ifdef TEST
 
 
 TEST(test_regx_match_all_basic) {

@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../array_values.hpp"
-
-#ifdef TEST
 
 
 TEST(test_array_values_with_ordered_map_preserves_sorted_order) {

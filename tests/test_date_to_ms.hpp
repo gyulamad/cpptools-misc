@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../date_to_ms.hpp"
-
-#ifdef TEST
 
 
 TEST(test_date_to_ms) {

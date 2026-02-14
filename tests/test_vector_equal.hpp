@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../vector_equal.hpp"
-
-#ifdef TEST
 
 
 // Test cases for vector_equal

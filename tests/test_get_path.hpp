@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../get_path.hpp"
-
-#ifdef TEST
 
 
 TEST(test_get_path_basic) {

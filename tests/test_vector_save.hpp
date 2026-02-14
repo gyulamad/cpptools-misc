@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../vector_save.hpp"
-
-#ifdef TEST
 
 
 TEST(test_vector_save_empty) {

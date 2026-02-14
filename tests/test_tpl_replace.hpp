@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../tpl_replace.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../tpl_replace.hpp"
 
 
 TEST(test_tpl_replace_single_replacement) {

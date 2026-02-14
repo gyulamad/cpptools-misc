@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../trim.hpp"
-
-#ifdef TEST
 
 
 TEST(test_trim_no_whitespace) {

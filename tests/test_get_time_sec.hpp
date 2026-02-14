@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../get_time_sec.hpp"
-
-#ifdef TEST
 
 
 // Test that get_time_sec returns the correct conversion from milliseconds

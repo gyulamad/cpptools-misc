@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../replace_extension.hpp"
-
-#ifdef TEST
 
 
 // Tests for replace_extension

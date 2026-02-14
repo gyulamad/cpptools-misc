@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../ms_to_datetime.hpp"
-
-#ifdef TEST
 
 TEST(test_ms_to_datetime) {
     // LCOV_EXCL_START

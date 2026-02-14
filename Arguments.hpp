@@ -10,6 +10,19 @@
 
 using namespace std;
 
+/**
+ * \class Arguments
+ * \brief Command-line argument parser
+ * 
+ * This class parses command-line arguments following standard C/C++ convention:
+ * - args[0] is the program name (argv[0])
+ * - args[1] is the first command-line argument
+ * - args[2] is the second command-line argument
+ * - and so on...
+ * 
+ * Arguments supports both positional access (args.get<T>(index)) and 
+ * key-based access (args.get<T>("key")) for flags like --key=value or -k value.
+ */
 class Arguments {
 public:
     using Key = pair<string, string>;
@@ -19,6 +32,7 @@ public:
     };
 
     // Constructor that initializes from command-line arguments
+    // Note: argc/argv follow standard C convention where argv[0] is the program name
     Arguments(
         int argc, char* argv[],
         const string& prefix = "--", 
@@ -29,6 +43,9 @@ public:
         prefix_short(prefix_short),
         equal_to(equal_to)
     {
+        // Copy all arguments from argv to args vector
+        // argv[0] (program name) becomes args[0]
+        // argv[1] (first arg) becomes args[1], etc.
         for (int i = 0; i < argc; i++) 
             args.push_back(string(argv[i]));
     }
@@ -143,7 +160,7 @@ public:
 
     // Get a boolean value at position
     bool getBool(size_t at) const {
-        if (has(at)) 
+        if (!has(at)) // ??
             throw ERROR("Missing argument at: " + to_string(at) + "\n" + help(at));
         return parse<bool>(args[at]);
     }
@@ -189,7 +206,7 @@ public:
         else
             throw ERROR("Missing value for argument: " + key + "\n" + help(key));
     }
-    
+
     template<typename T>
     T getByKey(const Key& keys) const {
         if (has(keys.first, prefix)) return get<T>(keys.first, prefix);
@@ -236,6 +253,8 @@ public:
     }
 
     string help(size_t at) const {
+        if (at >= helps.at.size()) 
+            throw ERROR("No help provided to argument at " + to_string(at));
         return helps.at[at].first + ": " + helps.at[at].second;
     }
 
@@ -253,10 +272,16 @@ public:
     string help(const Key& k) const {
         string output;
         for (const auto& [key, description] : helps.key) {
-            if (key.first == k.first || key.second == k.second)
+            if (k.first.empty() && k.second.empty()) {
+                // Empty key means show all
                 output += "\n" + prefix + key.first 
                     + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
                     + description + "\n";
+            } else if (key.first == k.first || key.second == k.second) {
+                output += "\n" + prefix + key.first 
+                    + (key.second.empty() ? "" : ", " + prefix_short + key.second) + "\n" 
+                    + description + "\n";
+            }
         }
         return output;
     }

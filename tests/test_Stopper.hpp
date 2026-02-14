@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../Stopper.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../Stopper.hpp"
 
 #include "../str_contains.hpp"
 #include <thread>

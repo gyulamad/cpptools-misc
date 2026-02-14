@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../regx_replace.hpp"
-
-#ifdef TEST
 
 
 // Test cases for regx_replace

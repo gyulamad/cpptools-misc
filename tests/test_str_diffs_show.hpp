@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../str_diffs_show.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../str_diffs_show.hpp"
 
 #include "../F.hpp" // For ANSI codes used in expected outpu
 #include "../compare_diff_vectors.hpp"

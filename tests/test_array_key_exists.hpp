@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../array_key_exists.hpp"
-
-#ifdef TEST
 
 // Test cases for array_key_exists with map
 TEST(test_array_key_exists_map_exists) {

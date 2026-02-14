@@ -1,6 +1,5 @@
 #pragma once
 
-#include "__DIR__.hpp"
 #include <vector>
 #include <string>
 #include "EXTERN.hpp"

@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../to_seconds.hpp"
-
-#ifdef TEST
 
 
 TEST(test_to_seconds_simple) {

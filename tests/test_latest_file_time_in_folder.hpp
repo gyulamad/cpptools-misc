@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../latest_file_time_in_folder.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../latest_file_time_in_folder.hpp"
 #include "../str_contains.hpp"
 #include <fstream>
 #include <thread>
@@ -204,6 +203,40 @@ TEST(test_latest_file_time_in_folder_ignores_directories) {
     
     auto time2 = latest_file_time_in_folder(test_dir);
     assert(time2 == time1 && "Creating empty directories should not change latest file time");
+    
+    fs::remove_all(test_dir);
+}
+
+// Test for latest_file_time_in_folder_ms function
+TEST(test_latest_file_time_in_folder_ms) {
+    string test_dir = "test_folder_ms_" + to_string(chrono::system_clock::now().time_since_epoch().count());
+    fs::create_directory(test_dir);
+    
+    // Create a file
+    string file1 = test_dir + "/file1.txt";
+    ofstream f1(file1);
+    f1 << "content1";
+    f1.close();
+    
+    time_ms result_ms = latest_file_time_in_folder_ms(test_dir);
+    assert(result_ms > 0 && "Should return valid time in milliseconds");
+    
+    fs::remove_all(test_dir);
+}
+
+// Test for latest_file_time_in_folder_sec function
+TEST(test_latest_file_time_in_folder_sec) {
+    string test_dir = "test_folder_sec_" + to_string(chrono::system_clock::now().time_since_epoch().count());
+    fs::create_directory(test_dir);
+    
+    // Create a file
+    string file1 = test_dir + "/file1.txt";
+    ofstream f1(file1);
+    f1 << "content1";
+    f1.close();
+    
+    time_ms result_sec = latest_file_time_in_folder_sec(test_dir);
+    assert(result_sec > 0 && "Should return valid time in seconds");
     
     fs::remove_all(test_dir);
 }

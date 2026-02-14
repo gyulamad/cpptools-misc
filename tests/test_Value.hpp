@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../Value.hpp"
-
-#ifdef TEST
 
 
 // Test struct for Value class tests

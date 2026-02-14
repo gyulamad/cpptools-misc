@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../capture_cerr.hpp"
-
-#ifdef TEST
 
 
 TEST(test_capture_cerr_basic) {

@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../vector_concat.hpp"
-
-#ifdef TEST
 
 
 struct test_vector_concat_TestData {

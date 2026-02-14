@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../strtolower.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../strtolower.hpp"
 
 
 TEST(test_strtolower_basic_conversion) {

@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../parse.hpp"
-
-#ifdef TEST
 
 #include <cmath>
 

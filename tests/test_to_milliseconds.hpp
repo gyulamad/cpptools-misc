@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../to_milliseconds.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../to_milliseconds.hpp"
 
 #include "../str_contains.hpp"
 

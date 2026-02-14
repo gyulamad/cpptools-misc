@@ -1,9 +1,9 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../array_shift.hpp"
-
-#ifdef TEST
 
 
 TEST(test_array_shift_basic) {

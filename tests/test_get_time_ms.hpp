@@ -1,12 +1,12 @@
 #pragma once
 
+#ifdef TEST
+
 #include "../TEST.hpp"
 #include "../get_time_ms.hpp"
 
 #include <thread>
 #include <chrono>
-
-#ifdef TEST
 
 // Test that get_time_ms returns a reasonable current time
 TEST(test_get_time_ms_current) {

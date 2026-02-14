@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../vector_load.hpp"
-
 #ifdef TEST
 
+#include "../TEST.hpp"
+#include "../vector_load.hpp"
 
 #include "../vector_save.hpp"
 #include "../vector_equal.hpp"

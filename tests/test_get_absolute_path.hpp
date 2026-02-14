@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../TEST.hpp"
-#include "../get_absolute_path.hpp"
-
 #ifdef TEST
 
-
+#include "../TEST.hpp"
+#include "../get_absolute_path.hpp"
 #include "../get_cwd.hpp"
 
 TEST(test_get_absolute_path_relative) {
@@ -67,6 +65,17 @@ TEST(test_get_absolute_path_double_dot) {
     string actual = get_absolute_path("..");
     string expected = parent_path; // ".." resolves to parent directory
     assert(actual == expected && "'..' should resolve to parent directory");
+}
+
+TEST(test_get_absolute_path_nonexistent_file) {
+    bool threw = false;
+    try {
+        get_absolute_path("/nonexistent/path/file.txt");
+    } catch (exception& e) {
+        threw = true;
+        assert(str_contains(e.what(), "File not found") && "Exception should mention file not found");
+    }
+    assert(threw && "Should throw exception for nonexistent file");
 }
 
 #endif
