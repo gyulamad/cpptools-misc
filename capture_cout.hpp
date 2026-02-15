@@ -9,7 +9,7 @@
 
 using namespace std;
 
-string capture_cout(function<void()> func, bool show = false) {
+inline string capture_cout(function<void()> func, bool show = false) {
     streambuf* original_cout_buffer = cout.rdbuf();
     stringstream buffer;
 

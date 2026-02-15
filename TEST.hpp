@@ -19,6 +19,8 @@
 #include <iostream>
 #include "ConsoleLogger.hpp"
 
+// TODO - add assert counter per tests and warn if no assert called in a test case function!
+
 using namespace std;
 
 #define assert(expr) if (!(expr)) throw ERROR("Assert failed: " #expr)
