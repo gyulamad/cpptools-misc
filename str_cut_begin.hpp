@@ -4,7 +4,7 @@
 
 using namespace std;
 
-string str_cut_begin(const string& s, size_t maxch = 300, const string& prepend = "...") {
+inline string str_cut_begin(const string& s, size_t maxch = 300, const string& prepend = "...") {
     // Check if the string is already shorter than or equal to the limit
     if (s.length() <= maxch) return s;
 
