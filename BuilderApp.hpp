@@ -6,6 +6,7 @@
 #include "Arguments.hpp"
 #include "Stopper.hpp"
 #include "file_exists.hpp"
+#include "mkdir.hpp"
 #include "readdir.hpp"
 #include <thread>
 #include <queue>
@@ -556,7 +557,11 @@ protected:
     void cleanProject(const string& projectRoot, bool verbose) {
         if (verbose) LOG("Starting project cleanup in: " + F(F_FILE, projectRoot));
 
-        // 1. Delete build directories first for efficiency.
+        if (!file_exists(projectRoot + "/libs"))
+            if (!mkdir(projectRoot + "/libs"))
+                throw ERROR("Unable to create lib folder");
+
+        // Delete build directories first for efficiency.
         if (verbose) LOG("Removing build directories...");
         const vector<string> topLevelEntries = readdir(projectRoot, "", true, false);
         for (const string& entry : topLevelEntries) {
@@ -568,7 +573,7 @@ protected:
             Executor::execute("rm -rf \"" + entry + "\"");
         }
 
-        // 2. Define all possible single-part artifact extensions (without the dot).
+        // Define all possible single-part artifact extensions (without the dot).
         // Use constants where available.
         vector<string> artifactExtensionParts = {
             // Remove leading dot for comparison
@@ -581,7 +586,7 @@ protected:
             "test", "gdb", "cov", "gcda", "gcno"
         };
 
-        // 3. Scan all remaining files recursively.
+        // Scan all remaining files recursively.
         if (verbose) LOG("Scanning for generated artifacts...");
         const vector<string> allFiles = readdir(projectRoot, "*.*", true);
         if (verbose) LOG("Found " + to_string(allFiles.size()) + " file(s) in project root: " 
@@ -594,7 +599,7 @@ protected:
             const string filenameWithoutExt = get_filename_only(file);
             const string extensionStr = get_extension_only(file);
             
-            // Case 1: No extension - check for a source file.
+            // No extension - check for a source file.
             if (extensionStr.empty()) {
                 bool sourceExists = false;
                 for (const string& srcExt : EXTS_C_CPP) {
@@ -610,7 +615,7 @@ protected:
                 continue;
             }
 
-            // Case 2: Has an extension - check if ALL parts are artifact extensions.
+            // Has an extension - check if ALL parts are artifact extensions.
             const vector<string> pathPieces = explode("/", filename);
             const vector<string> extensionPieces = explode(".", pathPieces[pathPieces.size() - 1]);
             int nth = 0;
