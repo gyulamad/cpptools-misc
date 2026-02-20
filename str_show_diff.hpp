@@ -8,7 +8,7 @@
 using namespace std;
 
 // Function to display a single diff block
-string str_show_diff(const str_diff_t& diff, bool show = true) {
+inline string str_show_diff(const str_diff_t& diff, bool show = true) {
     string ret = to_string(diff.bound[0]) + ".." + to_string(diff.bound[1]) + ":\n";
     if (show) cout << "changed line(s) " << ret;
     for (const string& line: diff.added) {

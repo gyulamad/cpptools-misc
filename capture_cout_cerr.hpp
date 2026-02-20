@@ -4,11 +4,10 @@
 #include <iostream>
 #include "TeeStreamBuf.hpp"
 #include <sstream>
-#include "ERROR.hpp"
 
 using namespace std;
 
-string capture_cout_cerr(function<void()> func, bool show = false) {
+inline string capture_cout_cerr(function<void()> func, bool show = false) {
     streambuf* original_cout_buffer = cout.rdbuf();
     streambuf* original_cerr_buffer = cerr.rdbuf();
     stringstream buffer;

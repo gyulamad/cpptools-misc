@@ -4,7 +4,7 @@
 
 using namespace std;
 
-string str_cut_end(const string& s, size_t maxch = 300, const string& append = "...") {
+inline string str_cut_end(const string& s, size_t maxch = 300, const string& append = "...") {
     // Check if the string is already shorter than or equal to the limit
     if (s.length() <= maxch) return s;
 

@@ -11,7 +11,7 @@ using namespace std;
 
 namespace fs = filesystem;
 
-string get_absolute_path(const string& fname, bool throws = true) {
+inline string get_absolute_path(const string& fname, bool throws = true) {
     string absolute = fs::absolute(fs::path(fname)).string();
     if (throws && !file_exists(absolute))
         throw ERROR("File not found (absolute): " + F(F_FILE, absolute) + ", originated from: " + F(F_FILE, fname) + ", cwd: " + get_cwd());

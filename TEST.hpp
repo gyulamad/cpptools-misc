@@ -21,6 +21,9 @@
 #include "Arguments.hpp"
 #include "explode.hpp"
 
+// TODO - add assert counter per tests and warn if no assert called in a test case function!
+// TODO - add timeout failure per tests - some cases the tests may goes infinite loops that could block CI/Agentic processes!
+
 using namespace std;
 
 #define assert(expr) if (!(expr)) throw ERROR("Assert failed: " #expr)
