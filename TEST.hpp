@@ -41,7 +41,11 @@ public:
 
     void run(Arguments& args) {
         args.addHelper("filter", "Filter tests by name - optinal, comma separated.");
-        const vector<string> filter = trim(explode(",", args.getopt<string>("filter", "")));
+        vector<string> filter = {};
+        if (args.has("filter")) {
+            string filter_str = args.getopt<string>("filter", "");
+            filter = trim(explode(",", filter_str));
+        }
         run(filter);
     }
 

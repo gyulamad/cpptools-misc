@@ -31,10 +31,13 @@ inline string capture_cout_cerr(function<void()> func, bool show = false) {
     } catch (exception& e) {
         ewhat = e.what();
     }
+    
+    // Restore original buffers BEFORE destroying TeeStreamBuf objects
     cout.rdbuf(original_cout_buffer);
     cerr.rdbuf(original_cerr_buffer);
     cout.clear();
     cerr.clear();
+    
     string output = buffer.str();
     if (!ewhat.empty()) 
         throw runtime_error(string("Exception in stdout and stderr capture: ") + ewhat + 
