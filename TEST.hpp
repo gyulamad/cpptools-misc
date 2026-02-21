@@ -25,9 +25,9 @@
 #include <chrono>
 #include <future>
 
-// Timeout configuration - default 30 seconds, can be overridden via -DTEST_TIMEOUT=<seconds>
+// Timeout configuration - default N seconds, can be overridden via -DTEST_TIMEOUT=<seconds>
 #ifndef TEST_TIMEOUT
-#define TEST_TIMEOUT 30
+#define TEST_TIMEOUT 10
 #endif
 
 using namespace std;
@@ -100,16 +100,16 @@ public:
                     continue;
                 } else {
                     string output;
-                    // If timeout is enabled (> 0), run test with timeout using std::async
+                    // If timeout is enabled (> 0), run test with timeout using async
                     if (timeout_ms > 0) {
                         output = capture_cout_cerr([&func, timeout_ms]() {
-                            // Use std::async with timeout
+                            // Use async with timeout
                             auto future = async(launch::async, [&func]() {
                                 func();
                             });
                             
                             // Wait for result with timeout
-                            if (future.wait_for(chrono::milliseconds(timeout_ms)) == std::future_status::timeout) {
+                            if (future.wait_for(chrono::milliseconds(timeout_ms)) == future_status::timeout) {
                                 throw runtime_error("Test timeout after " + to_string(TEST_TIMEOUT) + " seconds");
                             }
                             // Get the result to propagate any exceptions
