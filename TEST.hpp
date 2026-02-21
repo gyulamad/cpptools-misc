@@ -20,9 +20,15 @@
 #include "ConsoleLogger.hpp"
 #include "Arguments.hpp"
 #include "explode.hpp"
+#include "Stopper.hpp"
+#include <thread>
+#include <chrono>
+#include <future>
 
-// TODO - add assert counter per tests and warn if no assert called in a test case function!
-// TODO - add timeout failure per tests - some cases the tests may goes infinite loops that could block CI/Agentic processes!
+// Timeout configuration - default 30 seconds, can be overridden via -DTEST_TIMEOUT=<seconds>
+#ifndef TEST_TIMEOUT
+#define TEST_TIMEOUT 30
+#endif
 
 using namespace std;
 
@@ -54,6 +60,9 @@ public:
         #ifndef TEST_SHOW_DETAILS
         println("Details are hidden, to show details compile with -DTEST_SHOW_DETAILS");
         #endif
+
+        // Convert timeout from seconds to milliseconds
+        const long timeout_ms = TEST_TIMEOUT * 1000;
 
         int counter = 0;
         int errors = 0;
@@ -90,9 +99,28 @@ public:
                     print_skp();
                     continue;
                 } else {
-                    string output = capture_cout_cerr([&func](){
-                        func();
-                    }, true);
+                    string output;
+                    // If timeout is enabled (> 0), run test with timeout using std::async
+                    if (timeout_ms > 0) {
+                        output = capture_cout_cerr([&func, timeout_ms]() {
+                            // Use std::async with timeout
+                            auto future = async(launch::async, [&func]() {
+                                func();
+                            });
+                            
+                            // Wait for result with timeout
+                            if (future.wait_for(chrono::milliseconds(timeout_ms)) == std::future_status::timeout) {
+                                throw runtime_error("Test timeout after " + to_string(TEST_TIMEOUT) + " seconds");
+                            }
+                            // Get the result to propagate any exceptions
+                            future.get();
+                        }, true);
+                    } else {
+                        // No timeout - run normally
+                        output = capture_cout_cerr([&func]() {
+                            func();
+                        }, true);
+                    }
                     if (!output.empty()) {
                         add_warning("Test outputs: " + info + "\nOutput captured:\n" + output);
                         print_wrn();
