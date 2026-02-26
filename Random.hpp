@@ -2,6 +2,8 @@
 
 #include <random>
 
+#include "ERROR.hpp"
+
 using namespace std;
 
 template<typename T = mt19937>
