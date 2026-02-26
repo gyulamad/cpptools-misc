@@ -35,7 +35,7 @@ T parse(const string& str) {
 
 // Specialization for bool
 template <>
-bool parse<bool>(const string& str) {
+inline bool parse<bool>(const string& str) {
     string lower = str;
     transform(lower.begin(), lower.end(), lower.begin(), ::tolower);        
     if (in_array(lower, vector<string>({ "true", "on", "1", "yes"}))) return true;
