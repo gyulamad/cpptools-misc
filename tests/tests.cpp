@@ -105,7 +105,8 @@
 #include "test_TeeStreamBuf.hpp"
 #endif // TEST
 
-int main() {
+int main(int argc, char** argv) {
     createLogger<ConsoleLogger>();
-    tester.run();
+    Arguments args(argc, argv);
+    tester.run(args);
 }
