@@ -46,7 +46,8 @@ public:
     }
 
     void run(Arguments& args) {
-        args.addHelper("filter", "Filter tests by name - optinal, comma separated.");
+        args.addHelp("filter", "Filter tests by name - optinal, comma separated.");
+        args.addHelper();
         vector<string> filter = {};
         if (args.has("filter")) {
             string filter_str = args.getopt<string>("filter", "");
