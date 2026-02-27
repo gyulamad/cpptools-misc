@@ -10,7 +10,7 @@ namespace fs = filesystem; // Alias for convenience
 
 // Function to create a directory with PHP-like parameters
 [[nodiscard]]
-bool mkdir(const string& directoryPath, int permissions = 0777, bool recursive = false) {
+inline bool mkdir(const string& directoryPath, int permissions = 0777, bool recursive = false) {
     try {
         bool created = false;
 
@@ -45,6 +45,6 @@ bool mkdir(const string& directoryPath, int permissions = 0777, bool recursive =
     }
 }
 [[nodiscard]]
-bool mkdir(const string& dir, bool recursive, int permission = 0777) {
+inline bool mkdir(const string& dir, bool recursive, int permission = 0777) {
     return mkdir(dir, permission, recursive);
 }

@@ -25,7 +25,7 @@ using namespace std;
  * 
  * The destructor automatically restores previous signal handlers.
  */
-inline class SignalHandler {
+class SignalHandler {
 public:
     using SignalCallback = function<void(SignalHandler*, int)>;
 
@@ -38,8 +38,9 @@ public:
         setSigTermHandler(onSignalReceived);
     }
 
-    ~SignalHandler() {
-        restoreHandlers();
+    ~SignalHandler() noexcept {
+        // Don't restore handlers during static destruction to avoid issues
+        // The OS will clean up signal handlers when the process exits
     }
 
     // Non-copyable
@@ -134,19 +135,22 @@ public:
         mPreviousSigTermHandler = SIG_DFL;
     }
 
-    bool isSignalReceived() {
-        return _signalReceived;
+    /**
+     * @brief Get the global instance
+     */
+    static SignalHandler& getInstance() {
+        static SignalHandler instance;
+        return instance;
     }
 
 private:
     static void signalHandlerWrapper(int sig) {
-        // Get the static instance
-        static SignalHandler instance;
+        // Use the singleton instance to avoid double initialization issues
+        SignalHandler& instance = getInstance();
         
-        // Set the atomic flag
         instance.mSignalReceived.store(true, memory_order_release);
         instance.mReceivedSignal.store(sig, memory_order_release);
-
+        
         // Call the appropriate callback
         if (sig == SIGINT && instance.mSigIntCallback) {
             instance.mSigIntCallback(&instance, sig);
@@ -173,8 +177,12 @@ private:
         sigemptyset(&sa.sa_mask);
         sa.sa_flags = SA_RESTART;
         
-        if (sigaction(signum, &sa, reinterpret_cast<struct sigaction*>(prevHandler)) < 0) {
+        struct sigaction old_sa;
+        if (sigaction(signum, &sa, &old_sa) < 0) {
             // Handle error - could throw or log
+        } else {
+            // Store the previous handler
+            *prevHandler = old_sa.sa_handler;
         }
     }
 
@@ -186,19 +194,15 @@ private:
     atomic<bool> mSignalReceived{false};
     atomic<int> mReceivedSignal{0};
 
-    atomic<bool> _signalReceived;
-
-    // Signal callback function
+    // Signal callback function - sets the signal flag
     static void onSignalReceived(SignalHandler* self, int sig) {
         (void)sig;
-        self->_signalReceived = true;
+        self->mSignalReceived.store(true, memory_order_release);
     }
-} signalHandler;
+};
+
+// Global instance reference - declared after class definition
+inline SignalHandler& signalHandler = SignalHandler::getInstance();
 
 // Global instance - use this in your main application
 // SignalHandler signalHandler;
-
-
-
-
-
