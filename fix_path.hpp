@@ -7,7 +7,7 @@ using namespace std;
 
 namespace fs = filesystem;
 
-string fix_path(const string& pname) {
+inline string fix_path(const string& pname) {
     // Convert to filesystem path and normalize it
     fs::path path = fs::path(pname).lexically_normal();
     
