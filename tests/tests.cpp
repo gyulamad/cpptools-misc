@@ -60,6 +60,7 @@
 #include "test_sec_to_datetime.hpp"
 #include "test_Serializable_vector_serialize.hpp"
 #include "test_Settings.hpp"
+#include "test_sleep.hpp"
 #include "test_ShorthandGenerator.hpp"
 #include "test_sort.hpp"
 #include "test_Stopper.hpp"
