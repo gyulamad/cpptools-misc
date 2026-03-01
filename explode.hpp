@@ -6,7 +6,7 @@
 
 using namespace std;
 
-vector<string> explode(const string& delimiter, const string& str) {
+inline vector<string> explode(const string& delimiter, const string& str) {
     if (delimiter.empty())
         throw ERROR("Delimeter can not be empty.");
     vector<string> result;
