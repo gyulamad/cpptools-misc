@@ -4,6 +4,7 @@
 #include <array>
 #include <sys/wait.h>
 #include "ERROR.hpp"
+#include "Logger.hpp"
 
 using namespace std;
 
@@ -98,3 +99,19 @@ public:
         }
     } 
 };
+
+// command execution results
+struct exec_result_t {
+    int ret; // command returns
+    string out, err; // command stdout, stderr
+};
+
+inline exec_result_t exec(const string& cmd, bool dump = false, bool throws = false) {
+    exec_result_t res;    
+    if (dump) LOG_INFO("Execute command: " + cmd);
+    res.ret = Executor::execute(cmd, &res.out, &res.err, throws);
+    if (dump) LOG_INFO("Command output: " + res.out);
+    if (dump) LOG_INFO("Command error: " + res.err);
+    if (dump) LOG_INFO("Command result: " + to_string(res.ret));
+    return res;
+}
