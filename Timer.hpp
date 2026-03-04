@@ -4,6 +4,8 @@
 #include "Stopper.hpp"
 #include <thread>
 #include <functional>
+#include <mutex>
+#include <atomic>
 
 class Timer {
 public:
