@@ -104,6 +104,7 @@
 #include "test_Logger.hpp"
 #include "test_TEST.hpp"
 #include "test_TeeStreamBuf.hpp"
+#include "test_Timer.hpp"
 #endif // TEST
 
 int main(int argc, char** argv) {
