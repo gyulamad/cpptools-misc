@@ -409,6 +409,24 @@ public:
         }
     }
 
+    bool isString(string jselector) {
+        try {
+            nlohmann::json::json_pointer ptr = _json_selector(jselector);
+            return j.at(ptr).is_string();
+        } catch (...) {
+            return false;
+        }
+    }
+
+    bool isInt(string jselector) {
+        try {
+            nlohmann::json::json_pointer ptr = _json_selector(jselector);
+            return j.at(ptr).is_number_integer();
+        } catch (...) {
+            return false;
+        }
+    }
+
     bool isArray(string jselector) {
         try {
             nlohmann::json::json_pointer ptr = _json_selector(jselector);
