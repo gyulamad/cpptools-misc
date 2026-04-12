@@ -6,7 +6,7 @@
 
 using namespace std;
 
-string file_get_contents(const string& filename) {
+inline string file_get_contents(const string& filename) {
     // Open the file in binary mode and position the cursor at the end
     ifstream file(filename, ios::in | ios::binary);
     if (!file.is_open())
