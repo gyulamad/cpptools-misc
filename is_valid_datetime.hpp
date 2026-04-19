@@ -4,7 +4,7 @@
 
 using namespace std;
 
-bool is_valid_datetime(const string& datetime) {
+inline bool is_valid_datetime(const string& datetime) {
     if (datetime.empty()) return false;
 
     const string tpl = "0000-01-01 00:00:00.000";
