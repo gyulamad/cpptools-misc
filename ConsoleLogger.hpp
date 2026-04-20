@@ -11,7 +11,7 @@ public:
     virtual ~ConsoleLogger() {}
 protected:
     void write(const string& output) override {
-        cout << output << endl;
+        cout << output << endl << flush;
     }
 
     string time() override { return ""; }
