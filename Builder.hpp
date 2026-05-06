@@ -712,8 +712,10 @@ protected:
             }
             for (const string& includeDir: includeDirs) {
                 if (stop) break;
-                includePath = 
-                    get_absolute_path(fix_path(trim(includeDir) + "/" + include), false);
+                includePath = replace_extension(
+                    get_absolute_path(fix_path(trim(includeDir) + "/" + include), false),
+                    extension
+                );
                 if (file_exists(includePath)) {
                     results.push_back(includePath);
                     if (stopAtFirstFound) {

@@ -484,6 +484,17 @@ protected:
                     vector<string> linkObjectFiles;
                     // Recursive call with parallel=false to avoid nested parallelism
                     vector<string> allflags = array_merge({ FLAG_COMPILE }, flags);
+                    
+                    // === DEBUG LOGGING ===
+                    if (verbose) {
+                        lock_guard<mutex> dbgLock(outputMutex);
+                        cout << "[DEBUG] For " << cppFile << ": foundImplementations count=" << foundImplementations.size() << "\n";
+                        for (const string& imp : foundImplementations) {
+                            cout << "[DEBUG]   Implementation: " << imp << "\n";
+                        }
+                    }
+                    // === END DEBUG LOGGING ===
+                    
                     vector<string> builtObjectFiles = buildCppFiles(
                         linkObjectFiles, // allOutputFiles parameter
                         buildPath, 
