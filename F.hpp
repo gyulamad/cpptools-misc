@@ -66,4 +66,5 @@
 
 #define F(fmt, txt) (std::string(F_RESET) + (fmt) + (txt) + F_RESET)
 #define F_FILE_LINE(file, line) F(F_FILE, (std::string(file)) + ":" + std::to_string(line))
+#define F_FILE_LINE_COL(file, line, col) F(F_FILE, (std::string(file)) + ":" + std::to_string(line) + std::to_string(col))
 #define F_CALL(func, file, line) F(F_FUNC, (std::string(func)) + "()" + F_RESET + " at " + F_FILE_LINE((file), (line)))
