@@ -6,7 +6,7 @@
 
 using namespace std;
 
-string implode(const string& delimiter, const vector<string>& elements) {
+inline string implode(const string& delimiter, const vector<string>& elements) {
     ostringstream oss;
     for (size_t i = 0; i < elements.size(); ++i) {
         if (i != 0) oss << delimiter;
