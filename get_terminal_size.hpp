@@ -20,8 +20,8 @@ static pair<int, int> get_terminal_size() {
     }
 
     // Fallback to environment variables.
-    auto cols = getenv("COLUMNS");
-    auto rows = getenv("LINES");
+    char* cols = getenv("COLUMNS");
+    char* rows = getenv("LINES");
     int c = cols ? stoi(cols) : 80;
     int r = rows ? stoi(rows) : 24;
     return {c, r};
