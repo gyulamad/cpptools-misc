@@ -97,7 +97,36 @@ public:
                 throw ERROR("Execute failed (" + to_string(ret) + "): " + command + "\n" + (errors ? *errors : "<cerr>"));
             return ret;
         }
-    } 
+    }
+
+    /**
+     * Execute a command directly, inheriting parent's stdin/stdout/stderr.
+     * This is required for TUI/ncurses apps that need real terminal access.
+     * Unlike execute(), this does NOT pipe stdout/stderr — the child gets
+     * direct access to the same file descriptors as the parent process.
+     */
+    static int executeDirect(const string& command, bool throws = true) {
+        pid_t pid = fork();
+        if (pid == -1) {
+            const string errstr = "Failed to fork for direct execution";
+            cerr << errstr << endl;
+            if (throws) throw ERROR("executeDirect failed: " + command + "\n" + errstr);
+            return -1;
+        }
+
+        if (pid == 0) { // Child process — inherit stdin/stdout/stderr, no piping!
+            execl("/bin/sh", "sh", "-c", command.c_str(), (char*)nullptr);
+            
+            // If execl fails
+            const string errstr = "execl failed in executeDirect";
+            _exit(EXIT_FAILURE);
+        } else { // Parent process — just wait for child to finish
+            int status;
+            waitpid(pid, &status, 0);
+            
+            return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+        }
+    }
 };
 
 // command execution results

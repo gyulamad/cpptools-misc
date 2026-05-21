@@ -43,6 +43,7 @@ protected:
     const Arguments::Key PRM_ARGS = { "args", "a" };
     const Arguments::Key PRM_RUN = { "run", "x" };
     const Arguments::Key PRM_RUN_ARGS = { "run-args", "xargs" };
+    const Arguments::Key PRM_PTY = { "pty", "py" };  // allocate pseudo-TTY for ncurses/TUI apps
     const Arguments::Key PRM_SHARED = { "shared", "s" };
     const Arguments::Key PRM_VERBOSE = { "verbose", "v" };
     // TODO 
@@ -133,8 +134,10 @@ protected:
             "Additional build parameters");
         args.addHelpByKey(PRM_RUN, 
             "Run the executable after building.");
-        args.addHelpByKey(PRM_RUN_ARGS, 
+        args.addHelpByKey(PRM_RUN_ARGS,
             "Arguments to pass to the executable when running.");
+        args.addHelpByKey(PRM_PTY,
+            "Allocate pseudo-TTY for ncurses/TUI apps that need real terminal access.");
         args.addHelpByKey(PRM_SHARED, 
             "Build a shared library.");
         args.addHelpByKey(PRM_VERBOSE,
@@ -347,10 +350,21 @@ protected:
 
         if (verbose) LOG("Builder proceed in " + stopper.toString());
 
+        const bool pty = args.has(PRM_PTY);  // allocate pseudo-TTY for ncurses/TUI apps
         if (run) for (const string& outputFile: allOutputFiles) {
             string command = outputFile + (!runArgs.empty() ? " " + runArgs : "");
             if (verbose) LOG("Execute: " + command);
-            Executor::execute(command);
+            
+            if (pty) {
+                // Wrap with 'script -qc' to allocate a pseudo-TTY for ncurses/TUI apps.
+                // This is necessary because the integrated terminal doesn't provide real TTY access,
+                // and ncurses requires isatty() == true on stdin/stdout/stderr.
+                string ptyCommand = "TERM=xterm-256color script -qc \"" + command + "\" /dev/null";
+                if (verbose) LOG("Execute with PTY: " + ptyCommand);
+                Executor::executeDirect(ptyCommand);
+            } else {
+                Executor::execute(command);
+            }
             if (coverage) {
                 if (verbose) LOG("Generating coverage report...");
                 const string coverageInfoFilePath = 
