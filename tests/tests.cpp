@@ -9,6 +9,7 @@
 #include "test_array_key_exists.hpp"
 #include "test_array_merge.hpp"
 #include "test_array_remove.hpp"
+#include "test_array_reverse.hpp"
 #include "test_array_search.hpp"
 #include "test_array_shift.hpp"
 #include "test_array_slice.hpp"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "array_helpers.hpp"
+#include "array_reverse.hpp"
 
 using namespace std;
 
@@ -13,6 +13,7 @@ auto array_keys(const Container& container) {
     if constexpr (has_key_type<Container>::value) {
         for (const auto& element : container)
             keys.push_back(element.first);
+        keys = array_reverse(keys);
     } else {
         for (size_t i = 0; i < container.size(); ++i)
             keys.push_back(i);
