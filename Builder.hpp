@@ -28,7 +28,7 @@
 #include "Logger.hpp"
 #include <future>
 #include "Dependency.hpp"
-#include "ucfirst.hpp"
+#include "toPascalCase.hpp"
 #include <dlfcn.h>
 #include "array_shift.hpp"
 #include "sort.hpp"
@@ -276,7 +276,8 @@ protected:
         if (creator == DEFAULT_DEPENDENCY_CREATOR) creator = library;
         if (library == DEFAULT_DEPENDENCY_LIBRARY)
             throw ERROR("Unnamed library in dependency: " + dependency);
-        const string libClassName = ucfirst(library) + "Dependency";
+        
+        const string libClassName = toPascalCase(library) + "Dependency";
         const string libPathName = get_absolute_path (
             /*__DIR__ + "/" +*/ DIR_DEPENDENCIES + "/"
             + creator + "/" + library + "/" + libClassName,

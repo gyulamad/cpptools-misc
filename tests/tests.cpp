@@ -83,6 +83,7 @@
 #include "test_vector_deserialize.hpp"
 #include "test_vector_serialize.hpp"
 #include "test_TEST_timeout.hpp"
+#include "test_toPascalCase.hpp"
 #include "test_to_milliseconds.hpp"
 #include "test_to_seconds.hpp"
 #include "test_tpl_replace.hpp"

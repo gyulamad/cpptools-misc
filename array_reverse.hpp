@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <algorithm>
 #include <type_traits>
 #include "array_helpers.hpp"
 
@@ -38,12 +39,15 @@ auto array_reverse_string_keyed(const TContainer& input, bool /*preserve_keys*/)
     using KeyType = typename TContainer::key_type;
     using MappedType = typename TContainer::mapped_type;
 
-    // Collect all pairs first (unordered_map doesn't have rbegin/rend)
+   // Collect all pairs first (unordered_map doesn't have rbegin/rend)
     vector<pair<KeyType, MappedType>> all_pairs(input.size());
     size_t idx = 0;
     for (const auto& element : input) {
         all_pairs[idx++] = {element.first, element.second};
     }
+
+    // Sort by key to ensure deterministic order for unordered containers
+    sort(all_pairs.begin(), all_pairs.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
 
     // Build result in reverse order - reversed pairs are inserted into sorted map
     map<KeyType, MappedType> result;
@@ -74,6 +78,9 @@ auto array_reverse_int_keyed(const TContainer& input, bool preserve_keys)
     for (const auto& element : input) {
         all_pairs[count++] = {element.first, element.second};
     }
+
+    // Sort by key to ensure deterministic order for unordered containers
+    sort(all_pairs.begin(), all_pairs.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
 
     if (!preserve_keys) {
         // Renumber keys sequentially from 0 - values in reverse order
@@ -110,6 +117,9 @@ auto array_reverse_other_keyed(const TContainer& input, bool /*preserve_keys*/)
     for (const auto& element : input) {
         all_pairs[count++] = {element.first, element.second};
     }
+
+    // Sort by key to ensure deterministic order for unordered containers
+    sort(all_pairs.begin(), all_pairs.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
 
     // Build result in reverse order - keys always preserved
     map<KeyType, MappedType> result;
