@@ -49,6 +49,7 @@ protected:
     // TODO 
     const Arguments::Key PRM_PARALLEL { "parallel", "p" };
     const Arguments::Key PRM_CLEAN = { "clean", "c" };
+    const Arguments::Key PRM_CLEAN_LIBS = { "clean-libs", "cl" };
    
     const Arguments::Key PRM_NO_PCH = { "no-pch", "npch" };  // precompiled headers
     const Arguments::Key PRM_COMPRESS = { "compress", "cmprss" };  // zip builds
@@ -144,6 +145,8 @@ protected:
             "Enable verbose output.");
         args.addHelpByKey(PRM_CLEAN,
             "Clean the project from all generated files and folders.");
+        args.addHelpByKey(PRM_CLEAN_LIBS,
+            "Clean build artifacts AND remove all downloaded libraries (in libs/ folder).");
         args.addHelpByKey(PRM_NO_PCH, // TODO
             "Turns off precompiled headers (optional argument)");
         args.addHelpByKey(PRM_COMPRESS, // TODO
@@ -270,18 +273,35 @@ protected:
 
         // ====== clean first if needed ======
 
-        if (args.has(PRM_CLEAN)) {
+        vector<string> uniquePaths;
+        const bool clean = args.has(PRM_CLEAN) || args.has(PRM_CLEAN_LIBS);
+        const bool cleanLibs = args.has(PRM_CLEAN_LIBS);
+
+        if (clean) {
             if (!inputs.empty() && !inputs[0].empty()) {
-                vector<string> uniquePaths;
                 for (const string& input : inputs) {
                     string path = get_path(input);
                     if (!in_array(path, uniquePaths))
                         uniquePaths.push_back(path);
                 }
-                for (const string& path : uniquePaths)
-                    cleanProject(path, verbose);
-            } else // If no input is given, clean the current working directory.
-                cleanProject(get_cwd(), verbose);
+            } else {
+                uniquePaths.push_back(get_cwd());
+            }
+            for (const string& path : uniquePaths)
+                cleanProject(path, verbose);
+        }
+
+        if (cleanLibs) {
+            LOG("Cleaning all downloaded libraries...");
+            for (const string& path : uniquePaths) {
+                const string libsPath = path + "/libs";
+                if (file_exists(libsPath)) {
+                    LOG("Removing libraries from: " + F(F_FILE, libsPath));
+                    Executor::execute("rm -rf \"" + libsPath + "\"");
+                } else {
+                    LOG("No libraries folder found at: " + F(F_FILE, libsPath));
+                }
+            }
         }
 
 
