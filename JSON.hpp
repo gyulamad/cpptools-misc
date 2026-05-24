@@ -1,7 +1,18 @@
 #pragma once
 
+class JSON;
+
 // DEPENDENCY: nlohmann/json:v3.12.0
+// Note: in clangd.tpl you have to add:
+// CompileFlags:
+//   Add:   # Third-party dependencies (auto-generated paths)
+//     - -I{{PROJECT_ROOT}}/libs/nlohmann/json/v3.12.0/single_include/nlohmann
 #include <json.hpp>
+
+namespace nlohmann {
+    template<>
+    struct adl_serializer<JSON>;
+}
 
 #include "explode.hpp"
 #include "implode.hpp"
@@ -13,10 +24,10 @@
 using namespace std;
 using namespace nlohmann;
 
-string json_last_error = "";
+inline string json_last_error = "";
 
 // Function to remove single-line and multi-line comments
-string json_remove_comments(const string& json) {
+inline string json_remove_comments(const string& json) {
     string result;
     bool inString = false;
     bool escapeNext = false;
@@ -69,7 +80,7 @@ string json_remove_comments(const string& json) {
 }
 
 // Function to fix JSON by removing trailing commas
-string json_fix(string json) {
+inline string json_fix(string json) {
     json = json_remove_comments(json);
     string result;
     bool inString = false;
@@ -131,7 +142,7 @@ enum json_type {
 extern string json_last_error;
 
 // Function to convert jq-style or JavaScript-style selector to json_pointer
-nlohmann::json::json_pointer _json_selector(string jselector) {
+inline nlohmann::json::json_pointer _json_selector(string jselector) {
     if (jselector.empty()) return nlohmann::json::json_pointer("/");
     if (jselector[0] != '.') jselector = "." + jselector;
 
@@ -197,7 +208,7 @@ nlohmann::json::json_pointer _json_selector(string jselector) {
 }
 
 // Check if a JSON string is valid
-bool is_valid_json(string jstring) {
+inline bool is_valid_json(string jstring) {
     json_last_error = "";
     try {
         auto json = nlohmann::json::parse(jstring);
@@ -210,13 +221,13 @@ bool is_valid_json(string jstring) {
 }
 
 // Get the last JSON parsing error
-string get_json_error(string jstring) {
+inline string get_json_error(string jstring) {
     if (is_valid_json(jstring)) return "";
     return json_last_error;
 }
 
 // Get the type of a JSON value at a given selector
-json_type get_json_value_type(string jstring, string jselector) {
+inline json_type get_json_value_type(string jstring, string jselector) {
     try {
         auto json = nlohmann::json::parse(jstring);
         auto ptr = _json_selector(jselector);
@@ -240,7 +251,7 @@ json_type get_json_value_type(string jstring, string jselector) {
 }
 
 // Convert a json_type enum to its string representation
-string json_type_to_string(json_type type) {
+inline string json_type_to_string(json_type type) {
     switch (type) {
         case JSON_TYPE_UNDEFINED: return "undefined";
         case JSON_TYPE_NULL: return "null";
@@ -256,7 +267,7 @@ string json_type_to_string(json_type type) {
 }
 
 // Retrieve specific JSON value types
-string json_get_string(string jstring, string jselector) {
+inline string json_get_string(string jstring, string jselector) {
     if (get_json_value_type(jstring, jselector) != JSON_TYPE_STRING)
         throw ERROR("Expected string type at " + jselector);
     try {
@@ -267,7 +278,7 @@ string json_get_string(string jstring, string jselector) {
     }
 }
 
-int json_get_int(string jstring, string jselector) {
+inline int json_get_int(string jstring, string jselector) {
     if (get_json_value_type(jstring, jselector) != JSON_TYPE_INTEGER)
         throw ERROR("Expected integer type at " + jselector);
     try {
@@ -278,7 +289,7 @@ int json_get_int(string jstring, string jselector) {
     }
 }
 
-double json_get_double(string jstring, string jselector) {
+inline double json_get_double(string jstring, string jselector) {
     if (get_json_value_type(jstring, jselector) != JSON_TYPE_REAL)
         throw ERROR("Expected real type at " + jselector);
     try {
@@ -289,7 +300,7 @@ double json_get_double(string jstring, string jselector) {
     }
 }
 
-bool json_get_bool(string jstring, string jselector) {
+inline bool json_get_bool(string jstring, string jselector) {
     if (get_json_value_type(jstring, jselector) != JSON_TYPE_BOOLEAN)
         throw ERROR("Expected boolean type at " + jselector);
     try {
@@ -300,7 +311,7 @@ bool json_get_bool(string jstring, string jselector) {
     }
 }
 
-string json_get_array(string jstring, string jselector) {
+inline string json_get_array(string jstring, string jselector) {
     if (get_json_value_type(jstring, jselector) != JSON_TYPE_ARRAY)
         throw ERROR("Expected array type at " + jselector);
     try {
@@ -311,7 +322,7 @@ string json_get_array(string jstring, string jselector) {
     }
 }
 
-string json_get_object(string jstring, string jselector) {
+inline string json_get_object(string jstring, string jselector) {
     if (get_json_value_type(jstring, jselector) != JSON_TYPE_OBJECT)
         throw ERROR("Expected object type at " + jselector);
     try {
@@ -481,6 +492,8 @@ public:
     // void need(const vector<string>& fields) const;
 };
 
+
+
 namespace nlohmann {
     template<>
     struct adl_serializer<JSON> {
@@ -493,4 +506,3 @@ namespace nlohmann {
         }
     };
 }
-
