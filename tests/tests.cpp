@@ -107,6 +107,7 @@
 #include "test_TEST.hpp"
 #include "test_TeeStreamBuf.hpp"
 #include "test_Timer.hpp"
+#include "test_ucfirst.hpp"
 #endif // TEST
 
 int main(int argc, char** argv) {
