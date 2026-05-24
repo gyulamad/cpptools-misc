@@ -234,7 +234,7 @@ inline struct {
 
     void run(Arguments& args) {
         args.addHelper("filter", "Filter tests by name - optinal, comma separated.");
-        const vector<string> filter = trim(explode(",", args.getopt<string>("filter", "")));
+        const vector<string> filter = trim(explode(",", args.getopt<string>("filter", "")));        
         run(filter);
     }
 
