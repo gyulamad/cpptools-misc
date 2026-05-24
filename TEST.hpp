@@ -229,18 +229,20 @@ void name()
 #include <string>
 #include "Arguments.hpp"
 #include "explode.hpp"
+#include "array_dump.hpp"
 
 inline struct { 
 
     void run(Arguments& args) {
         args.addHelper("filter", "Filter tests by name - optinal, comma separated.");
-        const vector<string> filter = trim(explode(",", args.getopt<string>("filter", "")));        
+        vector<string> filter = trim(explode(",", args.getopt<string>("filter", "")));
+        if (filter.size() == 1 && filter[0].empty()) filter = {};
         run(filter);
     }
 
     void run(vector<string> filters = {}) {
         if (filters.empty()) return;
-        throw ERROR("Filter(s) left for tests runner");
+        throw ERROR("Filter(s) left for tests runner: " + array_dump(filters));
     }
 } tester;
 
