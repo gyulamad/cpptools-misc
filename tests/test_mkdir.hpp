@@ -42,9 +42,9 @@ TEST(test_mkdir_recursive_create) {
     assert(is_dir(test_dir) && "Created path should be a directory");
     
     // Cleanup
-    rmdir((test_dir + "/a/b/c").c_str());
-    rmdir((test_dir + "/a/b").c_str());
-    rmdir((test_dir + "/a").c_str());
+    rmdir(("test_mkdir_recursive/a/b/c").c_str());
+    rmdir(("test_mkdir_recursive/a/b").c_str());
+    rmdir(("test_mkdir_recursive/a").c_str());
     rmdir(test_dir.c_str());
 }
 
