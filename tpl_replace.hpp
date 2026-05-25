@@ -15,7 +15,7 @@
 using namespace std;
 
 
-string tpl_replace(const map<string, string>& replacements, const string& template_str, const string& placeholder_ptrn = "\\{\\{[^}]+\\}\\}") {
+inline string tpl_replace(const map<string, string>& replacements, const string& template_str, const string& placeholder_ptrn = "\\{\\{[^}]+\\}\\}") {
     
     // Check if all provided replacements exist in template        
     for (const auto& pair : replacements) {
@@ -46,7 +46,7 @@ string tpl_replace(const map<string, string>& replacements, const string& templa
 }
 
 // Overload for single replacement
-string tpl_replace(const string& from, const string& to, const string& subject, const string& placeholder_ptrn = "\\{\\{[^}]+\\}\\}") {
+inline string tpl_replace(const string& from, const string& to, const string& subject, const string& placeholder_ptrn = "\\{\\{[^}]+\\}\\}") {
     return tpl_replace({{from, to}}, subject, placeholder_ptrn);
 }
     
