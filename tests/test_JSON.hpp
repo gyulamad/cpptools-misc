@@ -1016,4 +1016,69 @@ TEST(test_JSON_set_with_error) {
     JSON json("{\"key\": \"value\"}");
 }
 
+TEST(test_JSON_isEmpty_empty_array) {
+    JSON json("[]");
+    assert(json.isEmpty() && "Empty array should be empty");
+}
+
+TEST(test_JSON_isEmpty_non_empty_array) {
+    JSON json("[1, 2, 3]");
+    assert(!json.isEmpty() && "Non-empty array should not be empty");
+}
+
+TEST(test_JSON_isEmpty_empty_object) {
+    JSON json("{}");
+    assert(json.isEmpty() && "Empty object should be empty");
+}
+
+TEST(test_JSON_isEmpty_non_empty_object) {
+    JSON json("{\"key\": \"value\"}");
+    assert(!json.isEmpty() && "Non-empty object should not be empty");
+}
+
+TEST(test_JSON_isEmpty_nested_empty_object_in_object) {
+    JSON json("{\"nested\": {}}");
+    assert(!json.isEmpty() && "Object with nested empty object should not be empty (has key)");
+}
+
+TEST(test_JSON_isEmpty_empty_string) {
+    JSON json("\"\"");
+    assert(json.isEmpty() && "Empty string should be empty");
+}
+
+TEST(test_JSON_isEmpty_non_empty_string) {
+    JSON json("\"hello\"");
+    assert(!json.isEmpty() && "Non-empty string should not be empty");
+}
+
+TEST(test_JSON_isEmpty_null_value) {
+    JSON json("null");
+    assert(!json.isEmpty() && "Null value should not be empty");
+}
+
+TEST(test_JSON_isEmpty_integer_value) {
+    JSON json("42");
+    assert(!json.isEmpty() && "Integer value should not be empty");
+}
+
+TEST(test_JSON_isEmpty_float_value) {
+    JSON json("3.14");
+    assert(!json.isEmpty() && "Float value should not be empty");
+}
+
+TEST(test_JSON_isEmpty_boolean_true) {
+    JSON json("true");
+    assert(!json.isEmpty() && "Boolean true should not be empty");
+}
+
+TEST(test_JSON_isEmpty_boolean_false) {
+    JSON json("false");
+    assert(!json.isEmpty() && "Boolean false should not be empty");
+}
+
+TEST(test_JSON_isEmpty_default_constructed) {
+    JSON json;
+    assert(json.isEmpty() && "Default constructed JSON (empty object) should be empty");
+}
+
 #endif

@@ -455,6 +455,13 @@ public:
             return false;
         }
     }
+
+    bool isEmpty() const {
+        if (j.is_array()) return j.empty();
+        if (j.is_object()) return j.empty();
+        if (j.is_string()) return j.get_ref<const string&>().empty();
+        return false;
+    }
     
 
     template<typename T>

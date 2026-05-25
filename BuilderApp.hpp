@@ -216,6 +216,8 @@ protected:
         // push default behaviours into the build:
         if (!modes.empty()) flags.push_back("-DBUILDER_MODES=\\\"" + implode(",", modes) + "\\\"");
         if (verbose) flags.push_back("-DBUILDER_VERBOSE");
+        if (verbose && !modes.empty() && in_array(MODE_TEST, modes))
+            flags.push_back("-DTEST_SHOW_DETAILS");
 
         // "coverage" argument (on/off) creates coverage report
         const bool coverage = in_array(MODE_COVERAGE, modes);
