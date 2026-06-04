@@ -45,6 +45,7 @@ TEST(test_mkdir_recursive_create) {
     rmdir("test_mkdir_recursive/a/b/c");
     rmdir("test_mkdir_recursive/a/b");
     rmdir("test_mkdir_recursive/a");
+    rmdir("test_mkdir_recursive");
     rmdir(test_dir.c_str());
 }
 
