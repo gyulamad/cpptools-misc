@@ -60,6 +60,15 @@ public:
         curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, ctx->error);
         curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, WriteHandler);
         curl_easy_setopt(handle, CURLOPT_WRITEDATA, ctx.get());
+        
+        // // ==================================================================================================
+        // // Disable Nagle's algorithm so TCP packets are sent immediately without waiting to batch
+        // curl_easy_setopt(handle, CURLOPT_TCP_NODELAY, 1L);
+
+        // // Reduce curl's internal read buffer from ~8KB default to 128 bytes.
+        // // Forces WriteHandler to fire after reading only tiny increments of data.
+        // curl_easy_setopt(handle, CURLOPT_BUFFERSIZE, 128UL);
+        // // ==================================================================================================
 
         // Method configuration
         switch(method) {
