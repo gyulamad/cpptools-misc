@@ -456,6 +456,26 @@ public:
         }
     }
 
+    // Get the size of an array at the given path. Throws if not an array or doesn't exist.
+    int arraySize(string jselector) const {
+        try {
+            if (jselector.empty()) {
+                // Root level: check directly without json_pointer
+                if (!j.is_array())
+                    throw ERROR("JSON Error, reason: value is not an array");
+                return static_cast<int>(j.size());
+            }
+            json::json_pointer ptr = _json_selector(jselector);
+            auto& ref = j.at(ptr);
+            if (!ref.is_array())
+                throw ERROR("JSON Error at: " + jselector + ", reason: value is not an array");
+            return static_cast<int>(ref.size());
+        } catch (const exception& e) {
+            //DEBUG(j.dump());
+            throw ERROR("JSON Error at: " + jselector + ", reason: " + string(e.what()));
+        }
+    }
+
     bool isEmpty() const {
         if (j.is_array()) return j.empty();
         if (j.is_object()) return j.empty();

@@ -1081,4 +1081,59 @@ TEST(test_JSON_isEmpty_default_constructed) {
     assert(json.isEmpty() && "Default constructed JSON (empty object) should be empty");
 }
 
+// arraySize tests
+TEST(test_JSON_arraySize_valid_array) {
+    JSON json("[1, 2, 3]");
+    int actual = json.arraySize("");
+    assert(actual == 3 && "Array size should be 3");
+}
+
+TEST(test_JSON_arraySize_empty_array) {
+    JSON json("[]");
+    int actual = json.arraySize("");
+    assert(actual == 0 && "Empty array size should be 0");
+}
+
+TEST(test_JSON_arraySize_nested_array) {
+    JSON json("{\"items\": [1, 2, 3, 4]}");
+    int actual = json.arraySize(".items");
+    assert(actual == 4 && "Nested array size should be 4");
+}
+
+TEST(test_JSON_arraySize_non_array_throws) {
+    JSON json("{\"key\": \"value\"}");
+    bool threw = false;
+    try {
+        json.arraySize(".key");
+    } catch (exception& e) {
+        assert(str_contains(e.what(), "not an array") && "Exception should contain 'not an array'");
+        threw = true;
+    }
+    assert(threw && "arraySize on non-array value should throw");
+}
+
+TEST(test_JSON_arraySize_missing_path_throws) {
+    JSON json("[1, 2]");
+    bool threw = false;
+    try {
+        json.arraySize(".missing");
+    } catch (exception& e) {
+        assert(!str_contains(e.what(), "not an array") && "Exception should not say 'not an array' for missing path");
+        threw = true;
+    }
+    assert(threw && "arraySize on missing path should throw");
+}
+
+TEST(test_JSON_arraySize_object_throws) {
+    JSON json("{\"a\": 1, \"b\": 2}");
+    bool threw = false;
+    try {
+        json.arraySize("");
+    } catch (exception& e) {
+        assert(str_contains(e.what(), "not an array") && "Exception should contain 'not an array' for root object");
+        threw = true;
+    }
+    assert(threw && "arraySize on root object should throw");
+}
+
 #endif
