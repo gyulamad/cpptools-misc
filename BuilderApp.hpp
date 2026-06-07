@@ -432,7 +432,7 @@ protected:
                 Executor::execute(createCoverageCommand);
                 Executor::execute(browseCoverageCommand);
             }
-        } else if (coverage) {
+        } else if (coverage && !shared) {
             LOG_INFO("Use --" + PRM_RUN.first + " or --" + PRM_RUN_ARGS.first 
                 + " parameter to generate coverage report.");
         }
