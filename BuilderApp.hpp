@@ -154,7 +154,10 @@ protected:
         args.addHelpByKey(PRM_COVERAGE_EXCLUDE,
             "Comma-separated list of file patterns to exclude from coverage report (e.g., 'cpptools/misc/*,tests/*')");
 
-            
+        // Register --help flag and check for it before processing arguments
+        args.addHelper();
+
+             
         Stopper stopper;
 
         // set "verbose" parameter (on/off) to see the full progress

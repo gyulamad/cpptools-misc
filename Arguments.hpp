@@ -57,7 +57,19 @@ public:
         addHelp(key, description);
         if (!has(key))
             return;
-        const string& hlp = get<string>(key);
+        // Safely extract optional value: --help shows all, --help 3 shows arg at index 3, etc.
+        long int idx = indexOf(key);
+        string hlp = "";
+        if (idx != -1 && idx + 1 < (long int)(args.size()) && args[idx + 1][0] != '-') {
+            hlp = args[idx + 1];
+        } else if (idx != -1) {
+            // Check for --help=value format
+            string arg = args[idx];
+            string prefixed_key = prefix + key;
+            if (str_starts_with(arg, prefixed_key + equal_to)) {
+                hlp = arg.substr((prefixed_key + equal_to).length());
+            }
+        }
         if (hlp.empty()) {
             LOG(help());
             return;
