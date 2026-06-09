@@ -1136,4 +1136,57 @@ TEST(test_JSON_arraySize_object_throws) {
     assert(threw && "arraySize on root object should throw");
 }
 
+// ===== setJson() tests =====
+
+TEST(test_JSON_setJson_sets_nested_object) {
+    JSON json("{}");
+    JSON nested("{\"inner\": 42}");
+    json.setJson(".outer", nested);
+
+    assert(json.isObject(".outer") && "Should be an object");
+    assert(json.get<int>(".outer.inner") == 42 && "Nested value should be accessible");
+}
+
+TEST(test_JSON_setJson_overwrites_existing_value) {
+    JSON json("{\"key\": \"old\"}");
+    JSON replacement("{\"new_key\": true}");
+    json.setJson(".key", replacement);
+
+    assert(json.isObject(".key") && "Should now be an object");
+    assert(json.get<bool>(".key.new_key") == true && "Replacement value should be set");
+}
+
+TEST(test_JSON_setJson_with_array) {
+    JSON json("{}");
+    JSON arr("[1, 2, 3]");
+    json.setJson(".nums", arr);
+
+    assert(json.isArray(".nums") && "Should be an array");
+    assert(json.arraySize(".nums") == 3 && "Array should have 3 elements");
+}
+
+// ===== setNull() tests =====
+
+TEST(test_JSON_setNull_sets_null_value) {
+    JSON json("{\"key\": \"value\"}");
+    json.setNull(".key");
+
+    assert(json.isNull(".key") && "Value should be null after setNull");
+}
+
+TEST(test_JSON_setNull_creates_key_when_missing) {
+    JSON json("{}");
+    json.setNull(".newKey");
+
+    assert(json.isDefined(".newKey") && "Key should exist");
+    assert(json.isNull(".newKey") && "New key should be null");
+}
+
+TEST(test_JSON_setNull_in_nested_path) {
+    JSON json("{\"outer\": {\"inner\": 123}}");
+    json.setNull(".outer.inner");
+
+    assert(json.isNull(".outer.inner") && "Nested value should be null");
+}
+
 #endif

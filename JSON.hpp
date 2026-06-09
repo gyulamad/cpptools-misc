@@ -503,13 +503,29 @@ public:
     template<typename T>
     void set(string jselector, T value) {
         try {
-            // json j = json::parse(jstring);
             json::json_pointer ptr = _json_selector(jselector);
-            // j[ptr] = value;
-            // jstring = j.dump();
             j[ptr] = value;
         } catch (const exception& e) {
-            //DEBUG(j.dump());
+            throw ERROR("JSON Error at: " + jselector + ", reason: " + string(e.what()));
+        }
+    }
+
+    // Set a JSON sub-object at the given path (avoids exposing nlohmann::json to callers)
+    void setJson(string jselector, const JSON& value) {
+        try {
+            json::json_pointer ptr = _json_selector(jselector);
+            j[ptr] = value.get_json();
+        } catch (const exception& e) {
+            throw ERROR("JSON Error at: " + jselector + ", reason: " + string(e.what()));
+        }
+    }
+
+    // Set a null value at the given path
+    void setNull(string jselector) {
+        try {
+            json::json_pointer ptr = _json_selector(jselector);
+            j[ptr] = nullptr;
+        } catch (const exception& e) {
             throw ERROR("JSON Error at: " + jselector + ", reason: " + string(e.what()));
         }
     }
