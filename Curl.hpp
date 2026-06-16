@@ -2,6 +2,7 @@
 
 // DEPENDENCY: curl
 
+#include <cstddef>
 #include <string>
 #include <functional>
 #include <atomic>
@@ -33,6 +34,7 @@ public:
 
     struct Context {
         atomic<bool> cancelled{false};
+        const atomic<bool>* external_cancelled = nullptr;  // External interrupt flag (e.g., from TUI stop button)
         StreamCallback cb;
         string buffer;
         string upload_data;
@@ -46,12 +48,14 @@ public:
         Method method, const string& url,
         const StreamCallback& callback,
         const vector<string>& req_headers = {},
-        const string& data = ""
+        const string& data = "",
+        const atomic<bool>* externalCancelled = nullptr
     ) {
         CURL* handle = curl_easy_init();
         if (!handle) return false;
         
         auto ctx = make_unique<Context>();
+        ctx->external_cancelled = externalCancelled;  // Wire external cancel flag (e.g., TUI stop button)
         ctx->cb = callback;
         ctx->upload_data = data;
 
@@ -141,13 +145,19 @@ public:
             rethrow_exception(ctx->exception);
         }
 
-        // Final error check
+       // Check if cancellation was intentional (local or external flag set).
+        bool intentionallyCancelled = ctx->cancelled.load() || 
+                         (ctx->external_cancelled != nullptr && ctx->external_cancelled->load());
+
+        // Final error check — suppress CURLE_WRITE_ERROR when intentionally cancelled.
         if (res != CURLE_OK) {
-            cerr << "cURL error (" << res << "): " << ctx->error << "\n";
-            return false;
+            if (!intentionallyCancelled) {
+                cerr << "cURL error (" << res << "): " << ctx->error << "\n";
+            }
+            return !intentionallyCancelled;  // Cancelled → true with partial response; real error → false
         }
 
-        // Flush remaining buffer
+        // Flush remaining buffer only when not cancelled (partial data already delivered via callbacks).
         if (!ctx->buffer.empty()) {
             ctx->cb(ctx->buffer);
         }
@@ -164,60 +174,67 @@ public:
     bool GET(
         const string& url, 
         const StreamCallback& callback,
-        const vector<string>& headers = {}
+        const vector<string>& headers = {},
+        const atomic<bool>* cancelled = nullptr
     ) {
-        return Request(Method::GET, url, callback, headers);
+        return Request(Method::GET, url, callback, headers, "", cancelled);
     }
 
     bool POST(
         const string& url,
         const StreamCallback& callback,
         const string& data,
-        const vector<string>& headers = {}
+        const vector<string>& headers = {},
+        const atomic<bool>* cancelled = nullptr
     ) {
-        return Request(Method::POST, url, callback, headers, data);
+        return Request(Method::POST, url, callback, headers, data, cancelled);
     }
 
     bool PUT(
         const string& url,
         const StreamCallback& callback,
         const string& data,
-        const vector<string>& headers = {}
+        const vector<string>& headers = {},
+        const atomic<bool>* cancelled = nullptr
     ) {
-        return Request(Method::PUT, url, callback, headers, data);
+        return Request(Method::PUT, url, callback, headers, data, cancelled);
     }
 
     bool DELETE(
         const string& url,
         const StreamCallback& callback,
-        const vector<string>& headers = {}
+        const vector<string>& headers = {},
+        const atomic<bool>* cancelled = nullptr
     ) {
-        return Request(Method::DELETE, url, callback, headers);
+        return Request(Method::DELETE, url, callback, headers, "", cancelled);
     }
 
     bool PATCH(
         const string& url,
         const StreamCallback& callback,
         const string& data,
-        const vector<string>& headers = {}
+        const vector<string>& headers = {},
+        const atomic<bool>* cancelled = nullptr
     ) {
-        return Request(Method::PATCH, url, callback, headers, data);
+        return Request(Method::PATCH, url, callback, headers, data, cancelled);
     }
 
     bool HEAD(
         const string& url,
         const StreamCallback& callback,
-        const vector<string>& headers = {}
+        const vector<string>& headers = {},
+        const atomic<bool>* cancelled = nullptr
     ) {
-        return Request(Method::HEAD, url, callback, headers);
+        return Request(Method::HEAD, url, callback, headers, "", cancelled);
     }
 
     bool OPTIONS(
         const string& url,
         const StreamCallback& callback,
-        const vector<string>& headers = {}
+        const vector<string>& headers = {},
+        const atomic<bool>* cancelled = nullptr
     ) {
-        return Request(Method::OPTIONS, url, callback, headers);
+        return Request(Method::OPTIONS, url, callback, headers, "", cancelled);
     }
 
     // === Configuration Methods ===
@@ -276,7 +293,7 @@ private:
     string proxy;
     inline static once_flag global_init_flag;
 
-    static size_t WriteHandler(
+   static size_t WriteHandler(
         char* ptr, 
         size_t size, 
         size_t nmemb, 
@@ -284,6 +301,10 @@ private:
     ) {
         auto* ctx = static_cast<Context*>(userdata);
         const size_t total = size * nmemb;
+
+        // Pre-check cancellation BEFORE appending — stops data accumulation immediately.
+        if (ctx->cancelled.load() || (ctx->external_cancelled != nullptr && ctx->external_cancelled->load())) 
+            return 0;  // Abort transfer
         
         ctx->buffer.append(ptr, total);
         
@@ -301,8 +322,8 @@ private:
                 return 0;  // Abort transfer
             }
 
-            // Check cancellation flag
-            if (ctx->cancelled.load()) 
+            // Check cancellation flag (local + external)
+            if (ctx->cancelled.load() || (ctx->external_cancelled != nullptr && ctx->external_cancelled->load())) 
                 return 0;  // Abort transfer by returning different size
         }
         
