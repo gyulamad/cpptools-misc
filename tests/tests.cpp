@@ -36,6 +36,7 @@
 #include "test_get_path.hpp"
 #include "test_get_time_ms.hpp"
 #include "test_get_time_sec.hpp"
+#include "test_hex2dec.hpp"
 #include "test_implode.hpp"
 #include "test_in_array.hpp"
 #include "test_is_dir.hpp"
