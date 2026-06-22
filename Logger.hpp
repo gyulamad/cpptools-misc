@@ -118,6 +118,15 @@ public:
         return getLogger();
     }
 
+    template<typename L, typename... Args>
+    static Logger* createLogger(Args&&... args) {
+        Logger* lg = getLogger();
+        if (lg) return lg;
+        static L l(std::forward<Args>(args)...);
+        instance().setLogger(&l);
+        return getLogger();
+    }
+
     static void setLogger(Logger* logger) {
         instance().logger = logger;
     }
@@ -134,6 +143,7 @@ private:
     Logger* logger = nullptr;
 };
 template<typename L> static Logger* createLogger() { return LoggerFactory::createLogger<L>(); }
+template<typename L, typename... Args> static Logger* createLogger(Args&&... args) { return LoggerFactory::createLogger<L>(std::forward<Args>(args)...); }
 inline void logger(Logger* logger) { LoggerFactory::setLogger(logger); }
 inline Logger* logger() { return LoggerFactory::getLogger(); }
 
