@@ -16,6 +16,7 @@
 #include "test_array_splice.hpp"
 #include "test_array_unique.hpp"
 #include "test_array_values.hpp"
+#include "test_base64.hpp"
 #include "test_Bitmask.hpp"
 #include "test_Builder.hpp"
 #include "test_Color.hpp"

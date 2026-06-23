@@ -21,8 +21,9 @@ inline unsigned int hex2uint(string hex) {
 }
 
 inline string uint2hex(unsigned int value) {
+    unsigned int uval = (unsigned int)value;
     static const char* digits = "0123456789ABCDEF";
-    if (value == 0) return "0";
+    if (uval == 0) return "0";
     string result;
     while (value > 0) {
         result = digits[value % 16] + result;

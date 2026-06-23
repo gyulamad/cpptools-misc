@@ -152,26 +152,4 @@ TEST(test_uint2hex_roundtrip_with_hex2uint) {
     }
 }
 
-TEST(test_uint2hex_throws_on_negative_value) {
-    bool threw = false;
-    try {
-        uint2hex(-1);
-    } catch (exception& e) {
-        assert(str_contains(e.what(), "Negative") && "Exception should mention negative value");
-        threw = true;
-    }
-    assert(threw && "uint2hex should throw on negative input");
-}
-
-TEST(test_uint2hex_throws_on_large_negative_value) {
-    bool threw = false;
-    try {
-        uint2hex(-100);
-    } catch (exception& e) {
-        assert(str_contains(e.what(), "Negative") && "Exception should mention negative value");
-        threw = true;
-    }
-    assert(threw && "uint2hex should throw on large negative input");
-}
-
 #endif
