@@ -31,6 +31,7 @@
 #include "test_execute.hpp"
 #include "test_Executor.hpp"
 #include "test_explode.hpp"
+#include "test_Factory.hpp"
 #include "test_fix_path.hpp"
 #include "test_foreach.hpp"
 #include "test_get_absolute_path.hpp"
